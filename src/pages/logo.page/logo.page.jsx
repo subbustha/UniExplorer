@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Image, View, ImageBackground, Button } from "react-native";
+import { StyleSheet, Image, View, ImageBackground } from "react-native";
 import CollegeLogo from "../../../assets/logo.page/logo.png";
 import BackgroundLogo from "../../../assets/logo.page/background.jpg";
-import {getChalkData} from "../../service/accountService";
 
 export default function LogoPage() {
   const [imageViewDimension, setImageViewDimension] = useState({
