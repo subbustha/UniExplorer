@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FlatList, SafeAreaView, View } from "react-native";
-import { TextInput } from "react-native-paper";
+import { TextInput, DefaultTheme} from "react-native-paper";
 import CardComponent from "../../components/card.component/card.component";
 
 import data from "./sample.data";
@@ -22,6 +22,8 @@ const LostAndFoundPage = () => {
         <TextInput
           label="Search Lost and Found"
           onChangeText={(text) => searchDataCollection(text)}
+          mode="outlined"
+          outlineColor={DefaultTheme.colors.primary}
         />
       </View>
 

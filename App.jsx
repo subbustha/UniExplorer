@@ -1,5 +1,5 @@
 import React from "react";
-import LostAndFoundPage from "./src/pages/lostandfound.page/lostandfound.page";
+import MapPage from "./src/pages/map.page/map.page";
 import { View } from "react-native";
 import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 
@@ -19,7 +19,7 @@ export default function App() {
     <PaperProvider theme={theme}>
       <View style={{height:"8%"}}/>
       <View style={{flex:1, alignItems:"center"}}>
-        <LostAndFoundPage />
+        <MapPage />
       </View>
       
       <View style={{height:"7%"}}/>
