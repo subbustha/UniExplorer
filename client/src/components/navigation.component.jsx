@@ -54,7 +54,7 @@ const Navigation = () => {
         );
         if (deleteData) {
           localStorage.clear();
-          window.location.reload();
+          window.location.replace("/Login");
         }
       }}
     />,

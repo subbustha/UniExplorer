@@ -1,6 +1,7 @@
 import React from "react";
 import MapPage from "./src/pages/map.page/map.page";
 import RegisterPage from "./src/pages/register.page/register.page";
+import HomePage from "./src/pages/home.page/home.page";
 import LogoPage from "./src/pages/logo.page/logo.page";
 import LostAndFoundPage from "./src/pages/lostandfound.page/lostandfound.page";
 import { View } from "react-native";
@@ -11,24 +12,18 @@ const theme = {
   roundness: 2,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#3498db',
-    accent: '#f1c40f',
-    background:"#ffffff"
+    primary: "#3498db",
+    accent: "#f1c40f",
+    background: "#ffffff",
   },
-}
+};
 
 export default function App() {
   return (
     <PaperProvider theme={theme}>
-      {/* <View style={{height:"8%"}}/> */}
-      <View style={{flex:1, alignItems:"center"}}>
-        {/* <MapPage /> */}
-        {/* <LogoPage/> */}
-        {/* <RegisterPage/> */}
-        <LostAndFoundPage/>
+      <View style={{ flex: 1 }}>
+        <HomePage />
       </View>
-      
-      {/* <View style={{height:"7%"}}/> */}
     </PaperProvider>
   );
 }

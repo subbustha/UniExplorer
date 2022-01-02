@@ -1,64 +1,48 @@
 import React, { useState, useEffect } from "react";
 import Navigation from "./components/navigation.component.jsx";
-import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
+import { Route, BrowserRouter, Routes, Navigate } from "react-router-dom";
 import HomePage from "./pages/home.page";
 import AdminPage from "./pages/admin.page";
 import LoginPage from "./pages/login.page";
 import LostAndFoundPage from "./pages/lostfound.page";
 import PageNotFoundPage from "./pages/pagenotfound.page";
-import { FaAtom } from "react-icons/fa";
+import axios from "axios";
 
 const App = () => {
-  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
+
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:3001/user/login")
-      .then(() => {
-        setLoading(false);
-        setIsAdmin(true);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setIsAdmin(false);
-      });
-  }, []);
+    if (token) {
+      axios
+        .post("http://localhost:3001/admin/verify", { token })
+        .then(() => {
+          setIsAdmin(true);
+        })
+        .catch((error) => {
+          setIsAdmin(false);
+        });
+    } else {
+      setIsAdmin(false);
+    }
+  }, [token]);
 
-  return loading ? (
-    <div className="w-full h-screen flex justify-center items-center bg-main">
-      <FaAtom size={70} className="spinner text-white" />
-    </div>
-  ) : (
+  return isAdmin ? <AuthenticatedComponent /> : <LoginPage />;
+};
+
+const AuthenticatedComponent = () => {
+  return (
     <BrowserRouter>
       <div className="flex h-screen bg-main">
-        {isAdmin && <Navigation />}
-        <div className={isAdmin && "pages"}>
+        <Navigation />
+        <div className="pages">
           <Routes>
-            <Route exact path="Login" element={<LoginPage />} />
-            <Route
-              exact
-              path="/"
-              element={isAdmin ? <HomePage /> : <Navigate to="/Login" />}
-            />
-            <Route
-              exact
-              path="Home"
-              element={isAdmin ? <HomePage /> : <Navigate to="/Login" />}
-            />
-            <Route
-              exact
-              path="Admin"
-              element={isAdmin ? <AdminPage /> : <Navigate to="/Login" />}
-            />
-            <Route
-              exact
-              path="LostAndFound"
-              element={
-                isAdmin ? <LostAndFoundPage /> : <Navigate to="/Login" />
-              }
-            />
-            {!isAdmin && <Route exact path="Login" element={<LoginPage />} />}
-
+            <Route exact path="/" element={<Navigate  to="/Home"/>} />
+            <Route path="/Home" element={<HomePage />} />
+            <Route path="/Admin" element={<AdminPage />} />
+            <Route path="/LostAndFound" element={<LostAndFoundPage />} />
+            <Route path="/Login" element={<Navigate to="/Home" />} />
             <Route path="*" element={<PageNotFoundPage />} />
           </Routes>
         </div>

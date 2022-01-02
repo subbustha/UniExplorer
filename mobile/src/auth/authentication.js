@@ -1,5 +1,5 @@
 import * as firebase from "firebase";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCvX3M4SZMCrwlPHJaK47Au72IHYBIpV0I",
@@ -38,7 +38,6 @@ const handleCreateAccount = (email, password, callback) => {
     .createUserWithEmailAndPassword(email, password)
     .then(({ user }) => {
       if (user && !user.emailVerified) {
-        console.log("User Created and ready to send email verification: ", user)
         return user.sendEmailVerification();
       }
       callback(null, "Error");
@@ -65,4 +64,25 @@ const handleLoginAccount = (email, password, callback) => {
     });
 };
 
-export { handleLookupAccount, handleCreateAccount, handleLoginAccount, auth };
+const isLoggedIn = () => {
+  return firebase.auth.currentUser;
+}
+
+
+const handleUserRole = (userId) => {
+  const ref = firebase.database().ref("admin/" + userId);
+  ref.once(
+    "value",
+    (snaphot) => {
+      const isAdmin = snaphot.val();
+      AsyncStorage.setItem("IS_ADMIN", JSON.stringify(!!isAdmin)).catch((e) => {
+        AsyncStorage.setItem("IS_ADMIN", "false");
+      });
+    },
+    (error) => {
+      console.log(error.code);
+    }
+  );
+};
+
+export { handleLookupAccount, handleCreateAccount, handleLoginAccount, auth, isLoggedIn };
