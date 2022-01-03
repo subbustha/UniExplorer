@@ -1,39 +1,44 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Image, View, ImageBackground, Text } from "react-native";
-import {Button} from "react-native-paper";
+import { Button } from "react-native-paper";
 import CollegeLogo from "../../../assets/logo.page/logo.png";
 import BackgroundLogo from "../../../assets/logo.page/background.jpg";
 import { auth } from "../../auth/authentication";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SMART_LOGIN } from "../../utils/constants/regiser.constant";
 
-export default function LogoPage() {
-  const [user, setUser] = useState(false);
+export default function LogoPage({ navigation }) {
   const [imageViewDimension, setImageViewDimension] = useState({
     width: 0,
     height: 0,
   });
 
-
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      console.log(user);
-      setUser(!!user);
-    }
-  });
-
-  const logoutUser = () => {
-      auth.signOut()
-      .then(() => console.log("Logged out"))
-  }
-
-  if (user) {
-    return (
-      <View>
-        <Text>You are logged in.</Text>
-        <Button onPress={logoutUser}>Logout</Button>
-      </View>
-    );
-  }
+  useEffect(() => {
+    setTimeout(async () => {
+      try {
+        const persistentLogin = await AsyncStorage.getItem(
+          SMART_LOGIN.label.PERSISTENT_LOGIN_KEY
+        );
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name:
+                !!auth.currentUser && JSON.parse(persistentLogin)
+                  ? "ActivityScreen"
+                  : "RegisterScreen",
+            },
+          ],
+        });
+      } catch (e) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "RegisterScreen" }],
+        });
+      }
+    }, 3000);
+  }, []);
 
   return (
     <ImageBackground source={BackgroundLogo} style={styles.mainContainer}>

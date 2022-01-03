@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { auth } = require("../firebase/firebase");
+//const { auth } = require("../firebase/firebase");
 
 const router = new Router();
 

@@ -28,6 +28,7 @@ const SMART_LOGIN = {
       ],
     },
     persistentLogin: "Keep me signed in",
+    PERSISTENT_LOGIN_KEY: "PERSISTENT_LOGIN_KEY",
     forgotPassword: "Forgot your password?",
     consentMessage: [
       "By creating an account you agree with our, ",

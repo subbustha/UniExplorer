@@ -43,7 +43,6 @@ const handleCreateAccount = (email, password, callback) => {
       callback(null, "Error");
     })
     .then((response) => {
-      console.log("Create account response = ", response);
       callback("Verify user", null);
     })
     .catch(() => callback(null, "Error"));
