@@ -9,6 +9,7 @@ const LostAndFoundPage = () => {
   const [searchData, setSearchData] = useState(data);
   
   useEffect(() => {
+    console.log("Log for LAS");
     //TO DO: Api call to search lost and found data
   },[]);
   
@@ -17,8 +18,8 @@ const LostAndFoundPage = () => {
   };
   const renderItem = ({ item }) => <CardComponent {...item} />;
   return (
-    <View>
-      <View style={{ width: 400 }}>
+    <View style={{minHeight:"100%", display:"flex", alignItems:"center"}}>
+      <View style={{ width: "95%" }}>
         <TextInput
           label="Search Lost and Found"
           onChangeText={(text) => searchDataCollection(text)}
@@ -31,7 +32,8 @@ const LostAndFoundPage = () => {
         <FlatList
           data={searchData}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id+""}
+          style={{marginBottom:80}}
         />
       </SafeAreaView>
     </View>
