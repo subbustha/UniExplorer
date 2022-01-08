@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, StyleSheet, Image, Keyboard } from "react-native";
+import { View, StyleSheet, Image, Keyboard, Alert } from "react-native";
 import {
   Headline,
   Subheading,
@@ -17,6 +17,7 @@ import {
   handleCreateAccount,
   handleLookupAccount,
   handleLoginAccount,
+  handleForgotPassword,
 } from "../../auth/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -57,6 +58,30 @@ const RegisterPage = (props) => {
       hideSubscription.remove();
     };
   }, []);
+
+  const triggerPasswordResetProtocol = () => {
+    Alert.alert(
+      "Password Reset Confirmation",
+      "An email will be sent to your provided email with password reset instructions.",
+      [
+        {
+          text: "Confirm",
+          onPress: () =>
+            handleForgotPassword(email, (success) => {
+              alert(
+                success
+                  ? "Password reset instructions are send to your device."
+                  : "Could not reset password. Please try again later"
+              );
+            }),
+        },
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+      ]
+    );
+  };
 
   const changeStateAndValidateInput = (input) => {
     if (currentView === VIEWS.LOOKUP_VIEW) {
@@ -132,7 +157,10 @@ const RegisterPage = (props) => {
     setLoading(true);
     handleLoginAccount(email, password, async (user, error) => {
       if (user && !error) {
-        await AsyncStorage.setItem(label.PERSISTENT_LOGIN_KEY, JSON.stringify(persistentLogin));
+        await AsyncStorage.setItem(
+          label.PERSISTENT_LOGIN_KEY,
+          JSON.stringify(persistentLogin)
+        );
         props.navigation.reset({
           index: 0,
           routes: [{ name: "ActivityScreen" }],
@@ -257,7 +285,7 @@ const RegisterPage = (props) => {
         {currentView === VIEWS.LOGIN_VIEW && (
           <Text
             style={{ marginTop: 20, textDecorationLine: "underline" }}
-            onPress={() => alert("TODO: Forgot password UI")}
+            onPress={triggerPasswordResetProtocol}
           >
             {label.forgotPassword}
           </Text>

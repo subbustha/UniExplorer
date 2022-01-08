@@ -21,6 +21,12 @@ if (firebase.apps.length === 0) {
 
 const auth = firebase.auth();
 
+const handleForgotPassword = (email, callback) =>{
+    auth.sendPasswordResetEmail(email)
+    .then(() => callback(true))
+    .catch(() => callback(false));
+}
+
 const handleLookupAccount = (email, callback) => {
   auth
     .fetchSignInMethodsForEmail(email)
@@ -84,4 +90,4 @@ const handleUserRole = (userId) => {
   );
 };
 
-export { handleLookupAccount, handleCreateAccount, handleLoginAccount, auth, isLoggedIn };
+export { handleLookupAccount, handleCreateAccount, handleLoginAccount, auth, isLoggedIn, handleForgotPassword };
