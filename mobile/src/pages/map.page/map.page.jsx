@@ -11,6 +11,33 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import CollegeMap from "../../../assets/maps.page/mapmin.png";
 
+const mapStyle = [
+  {
+    elementType: "labels",
+    stylers: [
+      {
+        visibility: "off"
+      }
+    ]
+  },
+  {
+    featureType: "administrative.land_parcel",
+    stylers: [
+      {
+        visibility: "off"
+      }
+    ]
+  },
+  {
+    featureType: "administrative.neighborhood",
+    stylers: [
+      {
+        visibility: "off"
+      }
+    ]
+  }
+];
+
 const MapPage = () => {
   useEffect(() => {
     (async () => {
@@ -27,30 +54,27 @@ const MapPage = () => {
     <View style={styles.container}>
       <MapView
         style={styles.map}
+        customMapStyle={mapStyle}
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}
-        // showsMyLocationButton={true}
-        zoomEnabled={true}
         region={{
-          latitude: 27.7090957,
-          longitude: 85.3260762,
-          latitudeDelta: 0.002,
+          latitude: 27.7087957,
+          longitude: 85.3258762,
+          latitudeDelta: 0.02,
           longitudeDelta: 0.002,
         }}
+        maxZoomLevel={20}
+        minZoomLevel={18}
       >
-        <Marker
+        {/* <Marker
           coordinate={{
-            latitude: 27.707520,
-            longitude: 85.3256167,
+            latitude: 27.7075,
+            longitude: 85.3256020,
           }}
           description={"This is a marker in React Natve"}
           icon={CollegeMap}
         >
-          {/* <Image
-            source={CollegeMap}
-            style={{ flex:1,width:"100%" }}
-          /> */}
-        </Marker>
+        </Marker> */}
       </MapView>
     </View>
   );
