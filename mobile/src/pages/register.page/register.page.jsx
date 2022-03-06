@@ -1,33 +1,41 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, StyleSheet, Image, Keyboard, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  Keyboard,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import {
   Headline,
   Subheading,
   TextInput,
   Button,
   Paragraph,
-  Checkbox,
   Surface,
   Text,
 } from "react-native-paper";
-import { registerConstants, validators } from "../../utils/index";
+import { registerConstants, validators, RESPONSE } from "../../utils/index";
 import { DefaultTheme } from "react-native-paper";
 import CollegeLogo from "../../../assets/logo.page/logo.png";
-import {
-  handleCreateAccount,
-  handleLookupAccount,
-  handleLoginAccount,
-  handleForgotPassword,
-} from "../../auth/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import AccontVerifyModal from "./account.verify.modal";
+import PasswordResetModal from "./password.reset.modal";
 
 const {
   VIEWS,
   SMART_LOGIN: { header, subHeader, label, button },
+  API_URL,
 } = registerConstants;
-const { emailValidator, passwordValidator } = validators;
+const { emailValidator, passwordValidator, fullNameValidator } = validators;
 
 const RegisterPage = (props) => {
+  const [modalAccountActivateVisible, setModalAccountActivateVisible] =
+    useState(false);
+  const [modalPasswordResetVisible, setModalPasswordResetVisible] =
+    useState(false);
   const [currentView, setCurrentView] = useState(VIEWS.LOOKUP_VIEW);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState({
@@ -35,13 +43,17 @@ const RegisterPage = (props) => {
     message: label.email.name,
   });
   const [password, setPassword] = useState("");
-  const passwordRef = useRef(null);
   const [passwordError, setPasswordError] = useState({
     visible: false,
     message: label.password.name,
   });
+  const [fullName, setFullName] = useState("");
+  const [fullNameError, setFullNameError] = useState({
+    visible: false,
+    message: label.fullName.name,
+  });
+
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
-  const [persistentLogin, setPersistentLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [keyboard, setKeyboard] = useState(false);
 
@@ -59,37 +71,18 @@ const RegisterPage = (props) => {
     };
   }, []);
 
-  const triggerPasswordResetProtocol = () => {
-    Alert.alert(
-      "Password Reset Confirmation",
-      "An email will be sent to your provided email with password reset instructions.",
-      [
-        {
-          text: "Confirm",
-          onPress: () =>
-            handleForgotPassword(email, (success) => {
-              alert(
-                success
-                  ? "Password reset instructions are send to your device."
-                  : "Could not reset password. Please try again later"
-              );
-            }),
-        },
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-      ]
-    );
-  };
-
-  const changeStateAndValidateInput = (input) => {
+  const changeStateAndValidateInput = (input, isName = false) => {
     if (currentView === VIEWS.LOOKUP_VIEW) {
       setEmail(input.trim());
       setEmailError(emailValidator(input.trim(), emailError));
     } else if (currentView === VIEWS.CREATE_VIEW) {
-      setPassword(input);
-      setPasswordError(passwordValidator(input, passwordError));
+      if (isName) {
+        setFullName(input);
+        setFullNameError(fullNameValidator(input, fullNameError));
+      } else {
+        setPassword(input);
+        setPasswordError(passwordValidator(input, passwordError));
+      }
     } else if (currentView === VIEWS.LOGIN_VIEW) {
       setPassword(input);
     }
@@ -113,7 +106,7 @@ const RegisterPage = (props) => {
     }
   };
 
-  const lookupUserAccount = () => {
+  const lookupUserAccount = async () => {
     if (emailError.message !== label.email.name) {
       return setEmailError({ ...emailError, visible: true });
     }
@@ -121,62 +114,124 @@ const RegisterPage = (props) => {
       return setEmailError({ visible: true, message: label.email.required });
     }
     setLoading(true);
-    handleLookupAccount(email, (userAccountFound, error) => {
-      if (error) {
-        return alert("Something went wrong. Please try again later.");
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        validateStatus: (status) => status < 500,
+      };
+      const { status } = await axios.get(API_URL.LOOKUP + "/" + email, config);
+      if (status === RESPONSE.OK) {
+        setCurrentView(VIEWS.LOGIN_VIEW);
+      } else if (status === RESPONSE.NOT_FOUND) {
+        setCurrentView(VIEWS.CREATE_VIEW);
+      } else if (status === RESPONSE.CONFLICT) {
+        setModalAccountActivateVisible(true);
       }
-      setCurrentView(userAccountFound ? VIEWS.LOGIN_VIEW : VIEWS.CREATE_VIEW);
-      setLoading(false);
-      passwordRef.current.focus();
-    });
+    } catch (error) {
+      alert("Something went wrong. Please try again later.");
+    }
+    setLoading(false);
   };
 
-  const createUserAccount = () => {
-    if (passwordError.message !== label.password.name) {
+  const createUserAccount = async () => {
+    if (!fullName) {
+      return setFullNameError({
+        visible: true,
+        message: label.fullName.required,
+      });
+    } else if (fullNameError.message !== label.fullName.name) {
+      return setFullNameError({ ...fullNameError, visible: true });
+    } else if (!password) {
+      return setPasswordError({
+        visible: true,
+        message: label.password.required,
+      });
+    } else if (passwordError.message !== label.password.name) {
       return setPasswordError({ ...passwordError, visible: true });
     }
+    setLoading(true);
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      const { status } = await axios.post(
+        API_URL.CREATE,
+        { email, password, fullName },
+        config
+      );
+      if (status === RESPONSE.CREATED) {
+        setCurrentView(VIEWS.LOGIN_VIEW);
+        setModalAccountActivateVisible(true);
+        Alert.alert("Congratulations!", "You account has been created");
+      }
+    } catch (error) {
+      Alert.alert("", "Something went wrong. Please try again later.");
+    }
+    setLoading(false);
+  };
+
+  const loginUserAccount = async () => {
     if (!password) {
       return setPasswordError({
         visible: true,
         message: label.password.required,
       });
     }
+    setPasswordError({ visible: false, message: label.password.required });
     setLoading(true);
-    handleCreateAccount(email, password, (user, error) => {
-      if (user) {
-        setCurrentView(VIEWS.LOGIN_VIEW);
-        alert("Please check your email for verification and sign in.");
-      } else if (error) {
-        alert("Could not create account. Please try again later.");
-      }
-      setLoading(false);
-    });
-  };
-
-  const loginUserAccount = () => {
-    setLoading(true);
-    handleLoginAccount(email, password, async (user, error) => {
-      if (user && !error) {
-        await AsyncStorage.setItem(
-          label.PERSISTENT_LOGIN_KEY,
-          JSON.stringify(persistentLogin)
-        );
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        validateStatus: (status) => status < 500,
+      };
+      const { data, status } = await axios.post(
+        API_URL.LOGIN,
+        {
+          email,
+          password,
+        },
+        config
+      );
+      console.log("Test");
+      console.log(status);
+      if (status === RESPONSE.OK) {
+        await AsyncStorage.setItem(label.USER_TOKEN, JSON.stringify(data));
+        setLoading(false);
         props.navigation.reset({
           index: 0,
           routes: [{ name: "ActivityScreen" }],
         });
-      } else if (user && error) {
+      } else if (status === RESPONSE.UNAUTHORIZED) {
+        Alert.alert("", "Invalid Email / Password");
         setLoading(false);
-        alert("Vefication pending. Please verify your email.");
-      } else if (!user && error) {
+      } else if (status === RESPONSE.CONFLICT) {
+        setModalAccountActivateVisible(true);
         setLoading(false);
-        alert("Username / Password Error");
       }
-    });
+    } catch (error) {
+      Alert.alert("", "Something went wrong. Please try again later.");
+      setLoading(false);
+    }
   };
 
   return (
     <View style={{ display: "flex", alignItems: "center" }}>
+      <AccontVerifyModal
+        modalVisible={modalAccountActivateVisible}
+        setModalVisible={setModalAccountActivateVisible}
+        email={email}
+      />
+      <PasswordResetModal
+        modalVisible={modalPasswordResetVisible}
+        setModalVisible={setModalPasswordResetVisible}
+        email={email}
+      />
       <View style={{ width: "90%", height: "90%", justifyContent: "center" }}>
         <View style={{ alignItems: "center" }}>
           {!keyboard && currentView === VIEWS.LOOKUP_VIEW && (
@@ -203,6 +258,7 @@ const RegisterPage = (props) => {
             mode="outlined"
             disabled={currentView !== VIEWS.LOOKUP_VIEW || loading}
             error={emailError.visible}
+            placeholder="Enter your Islington email"
             right={
               currentView !== VIEWS.LOOKUP_VIEW && (
                 <TextInput.Icon
@@ -215,6 +271,29 @@ const RegisterPage = (props) => {
             }
           />
         </View>
+
+        {currentView === VIEWS.CREATE_VIEW && (
+          <View>
+            <Paragraph
+              style={{
+                opacity: fullNameError.visible ? 1 : 0,
+                color: DefaultTheme.colors.error,
+              }}
+            >
+              {fullNameError.message}
+            </Paragraph>
+            <TextInput
+              label="Full Name"
+              value={fullName}
+              onChangeText={(fullName) =>
+                changeStateAndValidateInput(fullName, true)
+              }
+              mode="outlined"
+              error={fullNameError.visible}
+              placeholder="Enter your full name"
+            />
+          </View>
+        )}
 
         {currentView !== VIEWS.LOOKUP_VIEW && (
           <View>
@@ -229,13 +308,15 @@ const RegisterPage = (props) => {
             <TextInput
               label="Password"
               value={password}
-              ref={passwordRef}
-              onChangeText={(password) => changeStateAndValidateInput(password)}
+              onChangeText={(password) =>
+                changeStateAndValidateInput(password, false)
+              }
               mode="outlined"
               error={passwordError.visible}
               disabled={loading}
               secureTextEntry={isPasswordHidden}
               outlineColor="#3498db"
+              placeholder="Enter your password"
               right={
                 <TextInput.Icon
                   name="eye"
@@ -254,22 +335,6 @@ const RegisterPage = (props) => {
                 ))}
               </Surface>
             )}
-            {currentView === VIEWS.LOGIN_VIEW && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 20,
-                }}
-              >
-                <Checkbox.Android
-                  status={persistentLogin ? "checked" : "unchecked"}
-                  color="black"
-                  onPress={() => setPersistentLogin(!persistentLogin)}
-                />
-                <Subheading>{label.persistentLogin}</Subheading>
-              </View>
-            )}
           </View>
         )}
         <Button
@@ -283,12 +348,14 @@ const RegisterPage = (props) => {
           {button[currentView]}
         </Button>
         {currentView === VIEWS.LOGIN_VIEW && (
-          <Text
-            style={{ marginTop: 20, textDecorationLine: "underline" }}
-            onPress={triggerPasswordResetProtocol}
+          <TouchableOpacity
+            onPress={() => setModalPasswordResetVisible(true)}
+            activeOpacity={1}
           >
-            {label.forgotPassword}
-          </Text>
+            <Text style={{ marginTop: 20, textDecorationLine: "underline" }}>
+              {label.forgotPassword}
+            </Text>
+          </TouchableOpacity>
         )}
         {currentView === VIEWS.CREATE_VIEW && (
           <Paragraph style={{ marginTop: 20 }}>
@@ -312,11 +379,5 @@ const RegisterPage = (props) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  hidden: {
-    display: "none",
-  },
-});
 
 export default RegisterPage;

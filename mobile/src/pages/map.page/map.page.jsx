@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -10,32 +10,33 @@ import {
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import CollegeMap from "../../../assets/maps.page/mapmin.png";
+import BuildingOne from "../../../assets/maps.page/1.png";
 
 const mapStyle = [
   {
     elementType: "labels",
     stylers: [
       {
-        visibility: "off"
-      }
-    ]
+        visibility: "off",
+      },
+    ],
   },
   {
     featureType: "administrative.land_parcel",
     stylers: [
       {
-        visibility: "off"
-      }
-    ]
+        visibility: "off",
+      },
+    ],
   },
   {
     featureType: "administrative.neighborhood",
     stylers: [
       {
-        visibility: "off"
-      }
-    ]
-  }
+        visibility: "off",
+      },
+    ],
+  },
 ];
 
 const MapPage = () => {
@@ -68,13 +69,20 @@ const MapPage = () => {
       >
         {/* <Marker
           coordinate={{
+            latitude: 27.708564525974108,
+            longitude: 85.326087111668,
+          }}
+          image={BuildingOne}
+        /> */}
+        <Marker
+          coordinate={{
             latitude: 27.7075,
-            longitude: 85.3256020,
+            longitude: 85.325602,
           }}
           description={"This is a marker in React Natve"}
           icon={CollegeMap}
-        >
-        </Marker> */}
+          style={{ opacity: 1 }}
+        />
       </MapView>
     </View>
   );

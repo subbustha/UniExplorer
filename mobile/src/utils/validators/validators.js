@@ -1,7 +1,7 @@
 import { SMART_LOGIN } from "../constants/regiser.constant";
 
 const {
-  label: { email, password },
+  label: { email, password, fullName },
 } = SMART_LOGIN;
 
 const emailValidator = (payload, payloadState) => {
@@ -24,4 +24,14 @@ const passwordValidator = (payload, payloadState) => {
   }
 };
 
-export { emailValidator, passwordValidator };
+const fullNameValidator = (payload, payloadState) => {
+  if (payload === "") {
+    return { ...payloadState, message: fullName.required };
+  } else if (!fullName.fullNameRegex.test(payload)) {
+    return { ...payloadState, message: fullName.invalid };
+  } else {
+    return { visible: false, message: fullName.name };
+  }
+};
+
+export { emailValidator, passwordValidator, fullNameValidator };

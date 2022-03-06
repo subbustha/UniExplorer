@@ -28,6 +28,7 @@ const userSchema = new Schema({
     //User Token
     type: String,
     required: true,
+    default: "null",
   },
   emailVerified: {
     //User Email Verification
@@ -75,13 +76,18 @@ userSchema.pre("save", async function (next) {
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) {
-    throw new Error("Invalid id or password");
+    return null;
   }
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new Error("Invalid id or password");
+    return null;
   }
   return user;
+};
+
+userSchema.statics.findByEmail = async (email) => {
+  const user = await User.findOne({ email });
+  return user ? user : null;
 };
 
 const User = mongoose.model("User", userSchema);

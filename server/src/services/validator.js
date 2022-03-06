@@ -1,6 +1,6 @@
 const emailRegex = /^[A-Za-z0-9._%+-]+@islingtoncollege.edu.np$/;
 const passwordRegex = /^(?=.*\d)(?=.*[aA-zZ])[^\[|\]~\{\}]{8,25}$/;
-const fullNameRegex = /^[a-zA-Z 0-9 _.$&+,:;=?#\'\/\\\<\>^*()%!\-]*$/;
+const fullNameRegex = /^[a-zA-Z 0-9 _.\'\-]{1,40}$/;
 
 const isEmailValid = (email) => {
   return emailRegex.test(email);

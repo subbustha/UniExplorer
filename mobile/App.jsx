@@ -17,7 +17,7 @@ import {
   DrawerItemList,
   DrawerItem,
 } from "@react-navigation/drawer";
-import { auth } from "./src/auth/authentication";
+import { logOutUser } from "./src/auth/authentication";
 import CollegeLogo from "./assets/logo.page/logo.png";
 
 const theme = {
@@ -67,10 +67,10 @@ const DrawerNavigatorLogo = (props) => {
           </View>
         )}
         onPress={() => {
-          auth.signOut();
+          logOutUser();
           props.navigation.reset({
             index: 0,
-            routes: [{name: 'RegisterScreen'}],
+            routes: [{ name: "RegisterScreen" }],
           });
         }}
       />
@@ -155,7 +155,6 @@ const ActivityPage = (props) => {
 };
 
 export default function App() {
-
   return (
     <NavigationContainer>
       <PaperProvider theme={theme}>

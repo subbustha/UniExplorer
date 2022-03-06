@@ -4,9 +4,7 @@ import { StyleSheet, Image, View, ImageBackground, Text } from "react-native";
 import { Button } from "react-native-paper";
 import CollegeLogo from "../../../assets/logo.page/logo.png";
 import BackgroundLogo from "../../../assets/logo.page/background.jpg";
-import { auth } from "../../auth/authentication";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SMART_LOGIN } from "../../utils/constants/regiser.constant";
+import { verifyIfUserIsLoggedIn } from "../../auth/authentication";
 
 export default function LogoPage({ navigation }) {
   const [imageViewDimension, setImageViewDimension] = useState({
@@ -17,17 +15,12 @@ export default function LogoPage({ navigation }) {
   useEffect(() => {
     setTimeout(async () => {
       try {
-        const persistentLogin = await AsyncStorage.getItem(
-          SMART_LOGIN.label.PERSISTENT_LOGIN_KEY
-        );
+        const isUserVerified = await verifyIfUserIsLoggedIn();
         navigation.reset({
           index: 0,
           routes: [
             {
-              name:
-                !!auth.currentUser && JSON.parse(persistentLogin)
-                  ? "ActivityScreen"
-                  : "RegisterScreen",
+              name: isUserVerified ? "ActivityScreen" : "RegisterScreen",
             },
           ],
         });

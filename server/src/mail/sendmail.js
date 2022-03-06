@@ -8,13 +8,16 @@ const sendResetVerificationCode = async (email, code) => {
   const methodName = "sendResetVerificationCode";
   const message = {
     to: email,
-    from: "np01cp4a190391@islingtoncollege.edu.np",
+    from: "islingtoncollege.verifty@gmail.com",
     subject: "Password Reset Request",
-    text: `Hello, Your Password Reset Code is: ${code}`,
+    html: `<p>Your password reset code is: <h1>${code}</h1></p>
+            <br/>
+            <p>Please enter this code in the app to reset your password.</p>
+    `,
   };
   try {
-    console.log(process.env.SENDGRID_API_KEY);
     await sgMail.send(message);
+    log.info(fileName, methodName, "Password reset email successfully sent.");
   } catch (error) {
     log.error(fileName, methodName, error);
   }
@@ -23,14 +26,17 @@ const sendResetVerificationCode = async (email, code) => {
 const sendCreateAccountVerificationCode = async (email, code) => {
   const methodName = "sendCreateAccountVerificationCode";
   const message = {
-    to: "shresthasuraj62@gmail.com",
-    from: "np01cp4a190391@islingtoncollege.edu.np",
-    subject: "Welcome to UniExplorer App",
-    text: `Your activation code is: ${code}`,
+    to: email,
+    from: "islingtoncollege.verifty@gmail.com",
+    subject: "Welcome to Islington UniExplorer App",
+    html: `<p>Your activation code is: <h1>${code}</h1></p>
+            <br/>
+            <p>Please enter this code in the app to activate your account.</p>
+    `,
   };
   try {
-    console.log(process.env.SENDGRID_API_KEY);
     await sgMail.send(message);
+    log.info(fileName, methodName, "Activation email successfully sent.");
   } catch (error) {
     log.error(fileName, methodName, error);
   }
