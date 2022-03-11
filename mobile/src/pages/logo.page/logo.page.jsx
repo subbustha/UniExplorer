@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Image, View, ImageBackground, Text } from "react-native";
-import { Button } from "react-native-paper";
+import { StyleSheet, Image, View, ImageBackground, Alert } from "react-native";
 import CollegeLogo from "../../../assets/logo.page/logo.png";
 import BackgroundLogo from "../../../assets/logo.page/background.jpg";
 import { verifyIfUserIsLoggedIn } from "../../auth/authentication";
+import NetInfo from "@react-native-community/netinfo";
 
 export default function LogoPage({ navigation }) {
   const [imageViewDimension, setImageViewDimension] = useState({
@@ -13,24 +13,35 @@ export default function LogoPage({ navigation }) {
   });
 
   useEffect(() => {
-    setTimeout(async () => {
-      try {
-        const isUserVerified = await verifyIfUserIsLoggedIn();
-        navigation.reset({
-          index: 0,
-          routes: [
-            {
-              name: isUserVerified ? "ActivityScreen" : "RegisterScreen",
-            },
-          ],
-        });
-      } catch (e) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "RegisterScreen" }],
-        });
-      }
-    }, 3000);
+    NetInfo.fetch()
+      .then((state) => {
+        if (state.isConnected && state.isInternetReachable) {
+          setTimeout(async () => {
+            try {
+              const isUserVerified = await verifyIfUserIsLoggedIn();
+              navigation.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: isUserVerified ? "ActivityScreen" : "RegisterScreen",
+                  },
+                ],
+              });
+            } catch (e) {
+              console.log(e);
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "RegisterScreen" }],
+              });
+            }
+          }, 3000);
+        } else {
+          throw Error("Internet not connected");
+        }
+      })
+      .catch((error) => {
+        Alert.alert("", "Please check your internet connection.");
+      });
   }, []);
 
   return (
