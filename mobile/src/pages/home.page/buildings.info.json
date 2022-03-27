@@ -1,0 +1,55 @@
+[
+    {
+      "name": "Main Block",
+      "images": [
+        "https://drive.google.com/uc?export=view&id=1LtkPzeygTqFthi5B_sgilkqcxaQpX_3R",
+        "https://drive.google.com/uc?export=view&id=1XsMLFuPpHyP4P87jG4am58isAj1irrBO",
+        "https://drive.google.com/uc?export=view&id=1hnMfte1P3SSTLGdG1KyNsVuTmCvao5HA",
+        "https://drive.google.com/uc?export=view&id=1TGmp6uTmc_pskhmI_3LbHhFghJSzsCTb"
+      ],
+      "description": "Main Block of the college has all the important bodies of the college for students. Student services for the query, RTE for important  information, a playground for sports, canteen and cafeteria for eating and drinking and a learning zone for the students to do assignments in a peaceful environment"
+    },
+    {
+      "name": "London Block",
+      "images": [
+        "https://drive.google.com/uc?export=view&id=167PfFngsHoIVW2eYVN1-c5qiwrtsQSNg",
+        "https://drive.google.com/uc?export=view&id=15VbJbj5XP_mSPm48YwQASbcJXnsJRHaw",
+        "https://drive.google.com/uc?export=view&id=1g2wzxhPFQAPzSaViH9FIBUgeAkzQCx9B"
+      ],
+      "description": "London Block is situated right next to main or UK block. It encompasses three lectures halls namely Buckingham Palace, Kensington Palace and Westminister where mainly first year students take lectures. It also has four seminar halls namely Tower Bridge, Trafalgar Square, Piccadilly Circus amd Tower of London."
+    },
+    {
+      "name": "Alumni Block",
+      "images": [
+        "https://drive.google.com/uc?export=view&id=1uuOQVN1slO3kybZY_FdGVhdivha-s9BZ",
+        "https://drive.google.com/uc?export=view&id=1Fu3DIi_u1k7Q8XuYm2laeGJGg9ciEXgs",
+        "https://drive.google.com/uc?export=view&id=1L-CtfG5MXte_v6yvIN7WcucMZvKamXOE",
+        "https://drive.google.com/uc?export=view&id=1JtqWeGuiusQ0xzhQavhFdFIVX6JsR37t",
+        "https://drive.google.com/uc?export=view&id=1EaQZOKxBYqCXNl0ZTJQ-hcC5TYKDeAvg"
+      ],
+      "description": "Alumni Block is entirely dedicated to the achievements of Alumnis. There are four levels. Each class is named after some Alumni. On the top of the building, there is a rooftop restaurant which has ongoing construction. There is Brit house with juice bar and a nearby learning zone. Library is also available. "
+    },
+    {
+      "name": "Nepal Block",
+      "images": [
+        "https://drive.google.com/uc?export=view&id=1syxWo0c8lM-By7CU6mAwNImdJ1seS2dZ"
+      ],
+      "description": "Nepal Block has a reception on the ground floor where you can discuss about courses and  admissions. It has four levels. Two classes in each level. Tutorial and Lab classes are taken in this block. Alongside, there is Himal block which is just for staffs."
+    },
+    {
+      "name": "Kumari Block",
+      "images": [
+        "https://drive.google.com/uc?export=view&id=1T6U4yGwVVUiUPVHEGTfUfQbzAaLI0kX3",
+        "https://drive.google.com/uc?export=view&id=169HV37Q54FeYdg4Idi8BJMgOMQvZ4wff"
+      ],
+      "description": "Kumari Block encompasses two lecture halls, kumari cafe, admissions and learning zone. These were movie theatres which are converted into lecture theatres. You can have popcorns and watch your lectures. It also has a very chill environment. "
+    },
+    {
+      "name": "Skill Block",
+      "images": [
+        "https://drive.google.com/uc?export=view&id=1xynJhbVm8kAfpC5UIjmETNGgasMqB-_v"
+      ],
+      "description": "Skill Block is the latest block that has been constrcuted. It has five levels. The ground floor has a wide room for playing tabletennis. the first floor encompasses ING skill academy and servers. The second, third and fourth floors are labs. The top most floor is Teacher's Lounge."
+    }
+  ]
+  

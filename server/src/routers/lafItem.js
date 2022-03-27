@@ -21,7 +21,7 @@ const upload = multer({
 const router = new express.Router()
 
 //Router to create item
-router.post('/api/item/create', authAdmin, upload.single('image'), async (request, response) => {
+router.post('/api/item/create', upload.single('image'), async (request, response) => {
     if (request.fileExist) {
         if (!request.validFile) {
             return response.status(406).send('Invalid Data Provided')

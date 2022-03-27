@@ -19,6 +19,9 @@ import {
 } from "@react-navigation/drawer";
 import { logOutUser } from "./src/auth/authentication";
 import CollegeLogo from "./assets/logo.page/logo.png";
+import ProfilePage from "./src/pages/profile.page/profile.page";
+import FeedbackPage from "./src/pages/feeback.page/feedback.page";
+import AboutPage from "./src/pages/about.page/about.page";
 
 const theme = {
   ...DefaultTheme,
@@ -119,7 +122,7 @@ const ActivityPage = (props) => {
       />
       <Drawer.Screen
         name="Profile"
-        component={MapPage}
+        component={ProfilePage}
         options={{
           drawerIcon: ({ color }) => (
             <View style={{ width: 30 }}>
@@ -130,7 +133,7 @@ const ActivityPage = (props) => {
       />
       <Drawer.Screen
         name="Feedback"
-        component={MapPage}
+        component={FeedbackPage}
         options={{
           drawerIcon: ({ color }) => (
             <View style={{ width: 30 }}>
@@ -141,7 +144,7 @@ const ActivityPage = (props) => {
       />
       <Drawer.Screen
         name="About Us"
-        component={MapPage}
+        component={AboutPage}
         options={{
           drawerIcon: ({ color }) => (
             <View style={{ width: 30 }}>

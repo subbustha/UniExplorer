@@ -32,7 +32,7 @@ const SMART_LOGIN = {
       name: "Full Name",
       required: "Please enter your name",
       invalid: "Please enter a valid name",
-      fullNameRegex: /^[a-zA-Z 0-9 _.\'\-]{1,40}$/
+      fullNameRegex: /^[a-zA-Z 0-9 _.\'\-]{1,40}$/,
     },
     accessCode: {
       codeRegex: /^[a-zA-Z0-9]{5}$/,
@@ -62,7 +62,7 @@ const VIEWS = {
   CREATE_VIEW: "create",
 };
 
-const BASE_ENDPOINT = "http://192.168.1.99:5000";
+const BASE_ENDPOINT = "http://192.168.1.98:5000";
 
 const API_URL = {
   LOOKUP: BASE_ENDPOINT + "/api/user",
@@ -72,6 +72,7 @@ const API_URL = {
   ACTIVATE: BASE_ENDPOINT + "/api/user/activate",
   PASSWORD_RESET_CODE: BASE_ENDPOINT + "/api/user/send/reset",
   PASSWORD_RESET: BASE_ENDPOINT + "/api/user/reset",
+  GET_LAS_ITEM: BASE_ENDPOINT + "/api/item",
 };
 
 export { SMART_LOGIN, VIEWS, API_URL };
