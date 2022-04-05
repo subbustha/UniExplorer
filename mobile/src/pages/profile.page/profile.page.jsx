@@ -19,7 +19,6 @@ const ProfilePage = () => {
     try {
       const user = JSON.parse(await AsyncStorage.getItem(USER_TOKEN));
       if (user) {
-        console.log(user);
         setUserInfo(user);
       }
     } catch (error) {}

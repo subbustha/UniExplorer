@@ -198,8 +198,6 @@ const RegisterPage = (props) => {
         },
         config
       );
-      console.log("Test");
-      console.log(status);
       if (status === RESPONSE.OK) {
         await AsyncStorage.setItem(label.USER_TOKEN, JSON.stringify(data));
         setLoading(false);

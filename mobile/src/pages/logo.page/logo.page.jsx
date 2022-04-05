@@ -13,9 +13,9 @@ export default function LogoPage({ navigation }) {
   });
 
   useEffect(() => {
-    NetInfo.fetch()
-      .then((state) => {
-        if (state.isConnected && state.isInternetReachable) {
+    // NetInfo.fetch()
+    //   .then((state) => {
+    //     if (state.isConnected && state.isInternetReachable) {
           setTimeout(async () => {
             try {
               const isUserVerified = await verifyIfUserIsLoggedIn();
@@ -28,20 +28,19 @@ export default function LogoPage({ navigation }) {
                 ],
               });
             } catch (e) {
-              console.log(e);
               navigation.reset({
                 index: 0,
                 routes: [{ name: "RegisterScreen" }],
               });
             }
           }, 3000);
-        } else {
-          throw Error("Internet not connected");
-        }
-      })
-      .catch((error) => {
-        Alert.alert("", "Please check your internet connection.");
-      });
+      //   } else {
+      //     throw Error("Internet not connected");
+      //   }
+      // })
+      // .catch((error) => {
+      //   Alert.alert("", "Please check your internet connection.");
+      // });
   }, []);
 
   return (

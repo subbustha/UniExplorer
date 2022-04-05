@@ -10,8 +10,9 @@ import {
   ScrollView,
 } from "react-native";
 import { Button, Card, Paragraph, Title } from "react-native-paper";
-import BuldingData from "./buildings.info.json";
+import StaticBuildingData from "./buildings.info.json";
 import { AntDesign } from "@expo/vector-icons";
+import axios from "axios";
 
 const CollegeCard = ({
   collegeName = "",
@@ -102,7 +103,7 @@ const EachModal = ({
   setModalVisible,
   imageList = [],
   description = "",
-  name=""
+  name = "",
 }) => {
   const [imageIndex, setImageIndex] = useState(0);
 
@@ -121,7 +122,9 @@ const EachModal = ({
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-        <Text style={{fontWeight:"bold",fontSize:25, color:"black"}}>{name}</Text>
+          <Text style={{ fontWeight: "bold", fontSize: 25, color: "black" }}>
+            {name}
+          </Text>
           <Image
             source={{
               uri: imageList[imageIndex],
@@ -186,6 +189,20 @@ const EachModal = ({
 export default function HomePage() {
   const [modalVisible, setModalVisible] = useState(false);
   const [activeBuilding, setActiveBuilding] = useState(0);
+  const [BuildingData, setBuildingData] = useState(StaticBuildingData);
+
+  useEffect(() => {
+    axios
+      .get(
+        "https://drive.google.com/uc?export=view&id=1uv17_XyFPBmBbfc5yWUGPFoIjDdRE1EO"
+      )
+      .then((response) => {
+        if (response.data && response.data.length !== 0) {
+          setBuildingData(response.data);
+        }
+      })
+      .catch(error=>{});
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -193,11 +210,11 @@ export default function HomePage() {
         <EachModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
-          imageList={BuldingData[activeBuilding].images}
-          description={BuldingData[activeBuilding].description}
-          name={BuldingData[activeBuilding].name}
+          imageList={BuildingData[activeBuilding].images}
+          description={BuildingData[activeBuilding].description}
+          name={BuildingData[activeBuilding].name}
         />
-        {BuldingData.map((data, index) => (
+        {BuildingData.map((data, index) => (
           <CollegeCard
             collegeName={data.name}
             collegeImageUrl={data.images}
