@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, Pressable, Platform } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE, LocalTile } from "react-native-maps";
 import { TextInput } from "react-native-paper";
 import * as Location from "expo-location";
 import { BUILDING_DATA } from "./map.image.location";
@@ -35,7 +35,7 @@ const mapStyle = [
 ];
 
 const staticLocation = {
-  latitude: 27.7081957,
+  latitude: 27.7081557,
   longitude: 85.3254762,
   latitudeDelta: 0.0015,
   longitudeDelta: 0.0015,
@@ -62,6 +62,7 @@ const MapPage = () => {
     })();
     return () => {
       triggerZoomLeave;
+      restrictMapBoundaries;
     };
   }, []);
 
@@ -84,8 +85,9 @@ const MapPage = () => {
   const triggerLocationFilter = (text) => {
     setBuildingQuery(text);
     setFilteredBuildingInfo(
-      BUILDING_DATA.filter((each) => 
-       each.tags.toLowerCase().includes(text.toLowerCase()))
+      BUILDING_DATA.filter((each) =>
+        each.tags.toLowerCase().includes(text.toLowerCase())
+      )
     );
   };
 
@@ -107,40 +109,55 @@ const MapPage = () => {
           flexDirection: "row",
         }}
       >
-        <TextInput
-          label="Search Building Location"
-          mode="outlined"
-          style={{ width: "85%" }}
-          value={buildingQuery}
-          onChangeText={triggerLocationFilter}
-          ref={locationSearchInput}
-        />
-        <Pressable
+        <View
           style={{
-            width: 50,
-            height: 50,
+            display: "flex",
+            width: "100%",
             justifyContent: "center",
             alignItems: "center",
-          }}
-          onPress={() => {
-            setFilteredBuildingInfo(BUILDING_DATA);
-            setBuildingQuery("");
-            locationSearchInput.current.blur();
+            position: "relative",
           }}
         >
-          <Entypo name="circle-with-cross" size={50} color="black" />
-        </Pressable>
+          <TextInput
+            label="Search Map"
+            mode="outlined"
+            style={{ width: "90%" }}
+            value={buildingQuery}
+            onChangeText={triggerLocationFilter}
+            ref={locationSearchInput}
+          />
+          {buildingQuery ? (
+            <Pressable
+              style={{
+                width: 30,
+                height: 30,
+                justifyContent: "center",
+                alignItems: "center",
+                position: "absolute",
+                right: 25,
+                zIndex: 10,
+              }}
+              onPress={() => {
+                setFilteredBuildingInfo(BUILDING_DATA);
+                setBuildingQuery("");
+              }}
+            >
+              <Entypo name="cross" size={25} color="red" />
+            </Pressable>
+          ) : null}
+        </View>
       </View>
       <View style={styles.container}>
         <MapView
-          style={styles.map}
+          style={[styles.map, { marginTop: 60 }]}
           customMapStyle={mapStyle}
           provider={PROVIDER_GOOGLE}
           showsUserLocation={true}
-          region={currentRegion}
+          region={staticLocation}
           onRegionChangeComplete={restrictMapBoundaries}
           maxZoomLevel={20}
           minZoomLevel={18}
+          mapType={Platform.OS == "android" ? "none" : "standard"}
         >
           {filteredBuildingInfo.map((each, index) => (
             <Marker
@@ -155,6 +172,7 @@ const MapPage = () => {
               }}
             />
           ))}
+          <LocalTile pathTemplate="./mapmin.png" tileSize={256} zIndex={100} />
         </MapView>
       </View>
     </View>

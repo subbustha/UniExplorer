@@ -256,7 +256,6 @@ const RegisterPage = (props) => {
             mode="outlined"
             disabled={currentView !== VIEWS.LOOKUP_VIEW || loading}
             error={emailError.visible}
-            placeholder="Enter your Islington email"
             right={
               currentView !== VIEWS.LOOKUP_VIEW && (
                 <TextInput.Icon
