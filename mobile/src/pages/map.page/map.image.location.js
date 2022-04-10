@@ -2,141 +2,175 @@ export const BUILDING_DATA = [
   {
     uri: require("../../../assets/maps.page/1.png"),
     coordinates: [27.708500525974108, 85.326087111668],
-    name:"Hitler Building"
+    name: "Himal Block",
+    tags: "himal,academics,tutor,Dr07-rara,Dr08-tilicho,Dr09-rupa,Dr07 rara,Dr08 tilicho,Dr09 rupa",
   },
   {
     uri: require("../../../assets/maps.page/2.png"),
     coordinates: [27.708377074170802, 85.32604889019004],
-    name:"Tesla Building"
+    name: "Nepal Block",
+    tags: "reception,Tr01-Kantipur,Tr02-Patan,Tr03-Pokhara,Tr04-Lumbini,Tr05-Machapuchre,Tr06-Annapurna,Tr07-KanchanjungaTr08-Sagarmatha,Tr01 Kantipur,Tr02 Patan,Tr03 Pokhara,Tr04 Lumbini,Tr05 MachapuchreTr06 Annapurna,Tr07 KanchanjungaTr08 Sagarmatha",
   },
   {
     uri: require("../../../assets/maps.page/3.png"),
     coordinates: [27.7082823, 85.3248571],
-    name:"Computer Building"
+    name: "Skill Block",
+    tags: "ing, skill academy,test center,server room,lab01-sarun dahal,lab02-sanjay lama,lab03-srijan ghimire,lab04-prawjol adhikari,lab05-pratima giri,lab06-anew karki,lab07-rupest dangol,lab08-vijay pathak,lab09-shishir tamrakar,lab10-prajal deep kanel,lab11-dorjee khando lama,lab12-jagaran maharjan,lab01 sarun dahal,lab02 sanjay lama,lab03 srijan ghimire,lab04 prawjol adhikari,lab05 pratima giri,lab06 anew karki,lab07 rupest dangol,lab08 vijay pathak,lab09 shishir tamrakar,lab10 prajal deep kanel,lab11 dorjee khando lama,lab12 jagaran maharjan,teacher lounge,table tennis,pingpong",
   },
   {
     uri: require("../../../assets/maps.page/4.png"),
     coordinates: [27.7083037, 85.3254475],
-    name:"Rocket Building"
+    name: "Alumni Block",
+    tags: "alumni,R05-Subash Shrestha,LT04-Tridev Gurung,LT07-Pravash Karki,SR06-Abiral Subedi,SR07-Vijay Prakash Kandel,LT05-Laxman Niroula,SR08-Celeste Bajracharya,LT08-Sakshyam Bikram Shah,SR09-Bijay Limbu Semihang,SR10-Sushma Shrestha,LT06-Anushka Bara,R05 Subash Shrestha,LT04 Tridev Gurung,LT07 Pravash Karki,SR06 Abiral Subedi,SR07 Vijay Prakash Kandel,LT05 Laxman Niroula,SR08 Celeste Bajracharya,LT08 Sakshyam Bikram Shah,SR09 Bijay Limbu Semihang,SR10 Sushma Shrestha,LT06 Anushka Bara,roof top cafe,food,restaurant,lunch",
   },
   {
     uri: require("../../../assets/maps.page/5.png"),
     coordinates: [27.7084289, 85.3254063],
-    name:"Bathroom"
+    name: "Brit House",
+    tags: "student service,library,printing room,bath roomely,manchester,lost and found",
   },
   {
     uri: require("../../../assets/maps.page/6.png"),
     coordinates: [27.7084829, 85.3254035],
-    name:"Cafeteria"
+    name: "Juice Bar",
+    tags: "juice,bar,drinks",
   },
   {
     uri: require("../../../assets/maps.page/7.png"),
     coordinates: [27.7085036, 85.325681],
-    name:"Basketball ground"
+    name: "Learning Zone",
+    tags: "learning zone,study zone, study room",
   },
   {
     uri: require("../../../assets/maps.page/8.png"),
     coordinates: [27.7084666, 85.3253952],
-    name:"Chiya Bazar"
+    name: "Resources",
+    tags: "resources,emergency",
   },
   {
     uri: require("../../../assets/maps.page/9.png"),
     coordinates: [27.708517, 85.325374],
-    name:"Medical Clinic"
+    name: "Bristol Lab",
+    tags: "",
   },
   {
     uri: require("../../../assets/maps.page/10.png"),
     coordinates: [27.7084624, 85.3253295],
-    name:"Bathroom"
+    name: "Boys Restroom",
+    tags: "boys restroom,boys,restroom,bathroom,toilet,latren,washroom,freshroom,suachalaya",
   },
   {
     uri: require("../../../assets/maps.page/11.png"),
     coordinates: [27.7091517, 85.325253],
-    name:"Learning Zone"
+    name: "Girls Restroom",
+    tags: "girls restroom,girls,restroom,bathroom,toilet,latren,washroom,freshroom,suachalaya",
   },
   {
     uri: require("../../../assets/maps.page/12.png"),
     coordinates: [27.707907885284776, 85.32534053193378],
-    name:"IT Department"
+    name: "Kumari Block",
+    tags: "lt01-hall 01,lt01-hall 02,kumari cafe,cafe of kumari,kumari learning zone,learning zone of kumari,staff parking",
   },
   {
     uri: require("../../../assets/maps.page/13.png"),
     coordinates: [27.707721, 85.3256329],
-    name:"Luggage Department"
+    name: "Learning Zone",
+    tags: "learning zone of chiya chauthari,chiya chautari,muds cafe",
   },
   {
     uri: require("../../../assets/maps.page/14.png"),
     coordinates: [27.7078584, 85.3251963],
-    name:"Sports Room"
+    name: "Main Block",
+    tags: "main block",
   },
   {
     uri: require("../../../assets/maps.page/15.png"),
     coordinates: [27.7077506, 85.3252436],
-    name:"Game Room"
+    name: "Learning Zone",
+    tags: "learning zone,main block learning zone,learning zone of main block",
   },
   {
     uri: require("../../../assets/maps.page/16.png"),
     coordinates: [27.707787106960488, 85.32514897513398],
-    name:"Musk Building"
+    name: "Cafeteria",
+    tags: "cafeteria,canteen,food,eating,restaurant,lunch,breakfast,dinner",
   },
   {
     uri: require("../../../assets/maps.page/17.png"),
     coordinates: [27.7075972, 85.3251967],
-    name:"Groove Market"
+    name: "Multimedia Studio",
+    tags: "studio,multimedia studio",
   },
   {
     uri: require("../../../assets/maps.page/18.png"),
     coordinates: [27.7075384, 85.3253858],
-    name:"Retro Market"
+    name: "Boys Restroom",
+    tags: "boys restroom,boys,restroom,bathroom,toilet,latren,washroom,freshroom,suachalaya",
   },
   {
     uri: require("../../../assets/maps.page/19.png"),
     coordinates: [27.7075467, 85.3254022],
-    name:"Panzer Dhawa"
+    name: "UK Block",
+    tags: "uk block,student service,finance,oprations,rte,register,timetable,examination,register timetable examination,dr01-babbage,dr02-darwin,meeting room,lab01-oxford,lab02-nottingham,lab03-newcastle",
   },
   {
     uri: require("../../../assets/maps.page/20.png"),
     coordinates: [27.707619730541587, 85.32545687834009],
-    name:"Space X"
+    name: "Coffee Station",
+    tags: "coffee station,food,breakfast,doughnut,mocha,capuccino",
   },
   {
     uri: require("../../../assets/maps.page/21.png"),
     coordinates: [27.707608450977812, 85.32532008569132],
-    name:"Art Gallery"
+    name: "York Lab",
+    tags: "york lab",
   },
   {
     uri: require("../../../assets/maps.page/22.png"),
     coordinates: [27.7074778, 85.3254183],
-    name:"Zone Diner"
+    name: "Sick Room",
+    tags: "sick room,patient,hospital,clinic,emergency,medicine",
   },
   {
     uri: require("../../../assets/maps.page/23.png"),
     coordinates: [27.707471781563992, 85.32538135178186],
-    name:"Broad Test"
+    name: "London Block",
+    tags: "london block,sr01-tower bridge,sr02-trafalgar square,sr03-piccadilly circus,sr04-tower of london,lt01-buckingham palace,lt02-kensington palace,lt03-westminster palace",
   },
   {
     uri: require("../../../assets/maps.page/24.png"),
     coordinates: [27.707496139065228, 85.32532373232218],
-    name:"Kitkat Chocolate"
+    name: "Restroom",
+    tags: "men restroom,girl restroom,woman restroom,women restroom",
   },
   {
     uri: require("../../../assets/maps.page/25.png"),
     coordinates: [27.707443896806037, 85.32531166238257],
-    name:"Picasso I Like It"
+    name: "Brimingham Lab",
+    tags: "brimingham lab",
   },
   {
     uri: require("../../../assets/maps.page/26.png"),
     coordinates: [27.707470611600794, 85.32521979673118],
-    name:"Nepal Block"
+    name: "Multimedia Studios",
+    tags: "multimedia studios",
   },
   {
     uri: require("../../../assets/maps.page/27.png"),
     coordinates: [27.7076423, 85.325249],
-    name:"Dhading Block"
+    name: "IT and NOC",
+    tags: "IT and NOC,IT room,IT Building,surveillance room,software help,technical supporttech support,game,equipment,sports equipment",
   },
   {
     uri: require("../../../assets/maps.page/28.png"),
     coordinates: [27.70753057144966, 85.32519968016518],
-    name:"Something wrong block"
+    name: "Playgroud",
+    tags: "playground,basketball court,badminton,football,play ground",
+  },
+  {
+    uri: require("../../../assets/maps.page/29.png"),
+    coordinates: [27.7082823, 85.3248571],
+    name: "Students Parking Lot",
+    tags: "students parking,parking lot,student parking,car parking,bike parking,vehicle parking",
   },
 ];

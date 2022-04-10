@@ -84,9 +84,8 @@ const MapPage = () => {
   const triggerLocationFilter = (text) => {
     setBuildingQuery(text);
     setFilteredBuildingInfo(
-      BUILDING_DATA.filter((each) =>
-        each.name.toLowerCase().includes(text.toLowerCase())
-      )
+      BUILDING_DATA.filter((each) => 
+       each.tags.toLowerCase().includes(text.toLowerCase()))
     );
   };
 
@@ -101,7 +100,7 @@ const MapPage = () => {
         style={{
           position: "absolute",
           zIndex: 10,
-          bottom: Platform.OS === "ios" ? 30 : 10,
+          top: Platform.OS === "ios" ? 1 : 1,
           width: "100%",
           justifyContent: "center",
           alignItems: "center",
