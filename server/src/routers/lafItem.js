@@ -5,7 +5,7 @@ const multer = require('multer')
 const sharp = require('sharp')
 const upload = multer({
     limits: {
-        fileSize: 5000000
+        fileSize: 10000000
     },
     fileFilter(request, file, callback) {
         request.validFile = true
@@ -35,7 +35,7 @@ router.post('/api/item/create', upload.single('image'), async (request, response
     }
     try {
         if (request.file) {
-            const buffer = await sharp(request.file.buffer).resize({ width: 300, height: 300 }).png({quality:20}).toBuffer()
+            const buffer = await sharp(request.file.buffer).resize({ width: 300, height: 300 }).png({quality:10}).toBuffer()
             request.body.image = buffer
         }
 

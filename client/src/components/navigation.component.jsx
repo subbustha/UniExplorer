@@ -1,24 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { FaUniversity, FaBoxOpen, FaUserShield, FaFingerprint, FaSignOutAlt} from "react-icons/fa";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import {
+  FaUniversity,
+  FaBoxOpen,
+  FaUserShield,
+  FaFingerprint,
+  FaSignOutAlt,
+} from "react-icons/fa";
+import { Link, useLocation } from "react-router-dom";
 import Logo from "../assets/logo.png";
+import {MdClose} from "react-icons/md";
 
 const Navigation = () => {
-  const [currentTab, setCurrentTab] = useState("");
-  console.log(window.location.pathname);
-
-  useEffect(() => {
-    let location = window.location.pathname;
-    location = location.replace("/" , "");
-    setCurrentTab(location);
-  }, []);
+  const [currentTab, setCurrentTab] = useState(
+    useLocation().pathname.replace("/", "")
+  );
 
   const navigationTabs = [
     <SidebarIcon
       icon={<FaUniversity size="40" />}
       text="Home"
       key="home_tab"
-      focus={currentTab === "Home"}
+      focus={currentTab === "Home" || currentTab === ""}
       changeTab={setCurrentTab}
     />,
     <SidebarIcon
@@ -62,6 +64,7 @@ const Navigation = () => {
 
   return (
     <div className="nav-container" data-testid="navigation-container">
+      <MdClose size={28} color="white" className="absolute top-4 right-4" />
       <div>
         <img
           className="w-full text-white h-24 p-3 mb-5"

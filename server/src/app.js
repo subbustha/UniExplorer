@@ -12,9 +12,11 @@ app.use(cors());
 const adminRoutes=require('./routers/admin')
 const lafRoutes=require('./routers/lafItem')
 const userRoutes = require("./routers/user");
+const homeRoutes = require("./routers/home");
 app.use(adminRoutes)
 app.use(lafRoutes)
 app.use(userRoutes);
+app.use(homeRoutes);
 
 ////////////////////////////////////Router for UI Rendering//////////////////////////////////
 const router = new express.Router();

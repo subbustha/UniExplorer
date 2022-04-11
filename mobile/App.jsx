@@ -84,7 +84,7 @@ const DrawerNavigatorLogo = (props) => {
 const ActivityPage = (props) => {
   return (
     <Drawer.Navigator
-      initialRouteName="Map"
+      initialRouteName="Home"
       drawerContent={(props) => <DrawerNavigatorLogo {...props} />}
     >
       <Drawer.Screen

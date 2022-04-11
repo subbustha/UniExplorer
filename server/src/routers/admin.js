@@ -4,26 +4,56 @@ const router = new Router();
 const authAdmin = require("../middleware/authAdmin");
 const { sendVerificationCode } = require("../mail/sendmail");
 const randomstring = require("randomstring");
+const log = require("../services/logger");
+const {
+  INVALID_DATA_PROVIDED,
+  INTERNAL_SERVER_ERROR,
+  OK,
+  NOT_FOUND,
+  UNAUTHORIZED,
+  CREATED,
+  CONFLICT,
+} = require("../services/http-response");
+const {
+  isEmailValid,
+  isPasswordValid,
+  isNameValid,
+} = require("../services/validator");
+const fileName = "admin.js";
 
 //Router for admin login
 router.post("/api/admin/login", async (request, response) => {
+  const methodName = "AdminLoginRoute";
   try {
-    if (!request.body.password || !request.body.email) {
-      return response.status(401).send("Unauthorized");
+    let { email = null, password = null } = request.body;
+    if (
+      !email ||
+      !password ||
+      !isEmailValid(email) ||
+      !isPasswordValid(password)
+    ) {
+      log.warn(fileName, methodName, INVALID_DATA_PROVIDED.message);
+      return response
+        .status(INVALID_DATA_PROVIDED.status)
+        .send(INVALID_DATA_PROVIDED.message);
     }
-    const admin = await Admin.findByCredentials(
-      request.body.email,
-      request.body.password
-    );
+    email = email.toLowerCase();
+    const admin = await Admin.findByCredentials(email, password);
     if (!admin) {
-      return response.status(401).send("Unauthorized");
+      return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
+    }
+    if (!admin.emailVerified) {
+      return response.status(CONFLICT.status).send(CONFLICT.message);
     }
     const token = await admin.generateAuthToken();
     admin.token = token;
-    admin.save();
-    response.status(202).send(admin);
+    await admin.save();
+    response.status(OK.status).send(admin);
   } catch (error) {
-    response.status(500).send("Internal Server Error");
+    log.error(fileName, methodName, error);
+    response
+      .status(INTERNAL_SERVER_ERROR.status)
+      .send(INTERNAL_SERVER_ERROR.message);
   }
 });
 //Router for admin logout
@@ -94,10 +124,15 @@ router.delete("/api/admin", authAdmin, async (request, response) => {
 
 //Router for getting admin data
 router.get("/api/admin", authAdmin, async (request, response) => {
+  const methodName = "AdminTokenCheckRoute";
   try {
-    response.status(200).send(request.admin);
+    log.info(fileName, methodName, OK.message);
+    response.status(OK.status).send(OK.message);
   } catch (error) {
-    response.status(500).send("Internal Server Error");
+    log.error(fileName, methodName, error);
+    response
+      .status(INTERNAL_SERVER_ERROR.status)
+      .send(INTERNAL_SERVER_ERROR.message);
   }
 });
 //Router for getting adll admin data//Only for super admin

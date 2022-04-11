@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, Pressable, Platform } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE, LocalTile } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE, Overlay } from "react-native-maps";
 import { TextInput } from "react-native-paper";
 import * as Location from "expo-location";
 import { BUILDING_DATA } from "./map.image.location";
 import MapModal from "./map.modal";
-import { Entypo } from "@expo/vector-icons";
+import { EvilIcons } from "@expo/vector-icons";
+import CollegeTile from "./mapmin.png";
 
 const mapStyle = [
   {
@@ -142,7 +143,7 @@ const MapPage = () => {
                 setBuildingQuery("");
               }}
             >
-              <Entypo name="cross" size={25} color="red" />
+              <EvilIcons name="close" size={24} color="#808080" />
             </Pressable>
           ) : null}
         </View>
@@ -167,12 +168,18 @@ const MapPage = () => {
               }}
               key={index}
               onPress={() => {
-                setCurrentBuildingIndex(index);
+                setCurrentBuildingIndex(index + 1);
                 setModalVisible(true);
               }}
             />
           ))}
-          <LocalTile pathTemplate="./mapmin.png" tileSize={256} zIndex={100} />
+          <Overlay
+            image={CollegeTile}
+            bounds={[
+              [27.7072057, 85.3246762],
+              [27.7094557, 85.3263862],
+            ]}
+          />
         </MapView>
       </View>
     </View>

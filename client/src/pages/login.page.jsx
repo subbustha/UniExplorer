@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import CollegeLogo from "../assets/logo.png";
 import axios from "axios";
 import { FaAtom } from "react-icons/fa";
+import {ADMIN_LOGIN} from  "../config";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -12,15 +13,17 @@ const LoginPage = () => {
   const submitLoginAction = async (e) => {
     e.preventDefault();
     setLoading(true);
+    alert("Form submitted");
     try {
-      const {status, data} = await axios.post("http://localhost:3001/admin/login", {
+      console.log("We are here");
+      const {status, data} = await axios.post(ADMIN_LOGIN, {
         email,
         password,
       });
       const {token} = data;
       if(status === 200) {
         localStorage.setItem("token",token);
-        window.location.replace("/");
+        window.location.reload();
       }else {
           setFailedLogin(true);
           setLoading(false);

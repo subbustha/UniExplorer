@@ -7,7 +7,8 @@
 @layer base {
   h1 {
     @apply text-xl text-white;
-  },
+  }
+  ,
   body {
     @apply m-0 p-0 overflow-hidden;
   }
@@ -50,4 +51,14 @@
       }
     }
   }
+}
+
+.b-test-red {
+  border: solid 2px red;
+}
+.b-test-green {
+  border: solid 2px green;
+}
+.b-test-blue {
+  border: solid 2px blue;
 }

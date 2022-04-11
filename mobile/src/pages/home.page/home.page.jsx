@@ -6,12 +6,11 @@ import {
   Modal,
   Pressable,
   Image,
-  SafeAreaView,
   ScrollView,
 } from "react-native";
 import { Button, Card, Paragraph, Title } from "react-native-paper";
 import StaticBuildingData from "./buildings.info.json";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, EvilIcons } from "@expo/vector-icons";
 import axios from "axios";
 
 const CollegeCard = ({
@@ -56,15 +55,16 @@ const styles = StyleSheet.create({
   },
   centeredView: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
-    marginTop: 22,
   },
   modalView: {
     marginHorizontal: 10,
-    height: "100%",
-    width: "99%",
-    backgroundColor: "#C5C5C5",
+    height: "90%",
+    borderTopEndRadius: 20,
+    borderTopLeftRadius: 20,
+    width: "100%",
+    backgroundColor: "#d9d9d9",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -74,7 +74,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    justifyContent: "center",
+    position: "relative",
+    borderWidth: 1,
   },
   button: {
     elevation: 2,
@@ -122,7 +123,24 @@ const EachModal = ({
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <Text style={{ fontWeight: "bold", fontSize: 25, color: "black" }}>
+          <EvilIcons
+            name="close"
+            size={30}
+            color="#808080"
+            style={{ position: "absolute", top: 10, right: 10 }}
+            onPress={() => {
+              setImageIndex(0);
+              setModalVisible(false);
+            }}
+          />
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: 25,
+              color: "black",
+              marginVertical: 10,
+            }}
+          >
             {name}
           </Text>
           <Image
@@ -130,9 +148,12 @@ const EachModal = ({
               uri: imageList[imageIndex],
             }}
             style={{
-              width: 380,
+              width: 360,
               height: 250,
               margin: 10,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: "black",
             }}
           />
           <View
@@ -140,7 +161,7 @@ const EachModal = ({
               flexDirection: "row",
               justifyContent: "space-between",
               alignItems: "center",
-              width: "90%",
+              width: "50%",
               marginVertical: 15,
             }}
           >
@@ -174,12 +195,6 @@ const EachModal = ({
           <Paragraph style={{ marginHorizontal: 20, textAlign: "justify" }}>
             {description}
           </Paragraph>
-          <Pressable
-            style={[styles.button, styles.buttonClose]}
-            onPress={() => setModalVisible(false)}
-          >
-            <Text style={styles.textStyle}>X</Text>
-          </Pressable>
         </View>
       </View>
     </Modal>
@@ -201,7 +216,7 @@ export default function HomePage() {
           setBuildingData(response.data);
         }
       })
-      .catch(error=>{});
+      .catch((error) => {});
   }, []);
 
   return (

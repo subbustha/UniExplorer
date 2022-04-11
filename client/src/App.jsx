@@ -6,27 +6,14 @@ import AdminPage from "./pages/admin.page";
 import LoginPage from "./pages/login.page";
 import LostAndFoundPage from "./pages/lostfound.page";
 import PageNotFoundPage from "./pages/pagenotfound.page";
-import axios from "axios";
+import Authenticator from "./routes/admin-auth";
 
 const App = () => {
-  const token = localStorage.getItem("token");
-
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    if (token) {
-      axios
-        .post("http://localhost:3001/admin/verify", { token })
-        .then(() => {
-          setIsAdmin(true);
-        })
-        .catch((error) => {
-          setIsAdmin(false);
-        });
-    } else {
-      setIsAdmin(false);
-    }
-  }, [token]);
+    Authenticator((result) => setIsAdmin(result));
+  }, []);
 
   return isAdmin ? <AuthenticatedComponent /> : <LoginPage />;
 };
@@ -38,7 +25,7 @@ const AuthenticatedComponent = () => {
         <Navigation />
         <div className="pages">
           <Routes>
-            <Route exact path="/" element={<Navigate  to="/Home"/>} />
+            <Route exact path="/" element={<Navigate to="/Home" />} />
             <Route path="/Home" element={<HomePage />} />
             <Route path="/Admin" element={<AdminPage />} />
             <Route path="/LostAndFound" element={<LostAndFoundPage />} />
