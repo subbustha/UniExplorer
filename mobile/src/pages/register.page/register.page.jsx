@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Image,
-  Keyboard,
-  Alert,
-  TouchableOpacity,
-} from "react-native";
+import { View, Image, Keyboard, Alert, TouchableOpacity } from "react-native";
 import {
   Headline,
   Subheading,
@@ -22,6 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import AccontVerifyModal from "./account.verify.modal";
 import PasswordResetModal from "./password.reset.modal";
+
 
 const {
   VIEWS,

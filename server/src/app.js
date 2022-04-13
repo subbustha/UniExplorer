@@ -9,14 +9,16 @@ app.use(express.json());
 app.use(cors());
 
 ////////////////////////////////////Routers for REST APIs/////////////////////////////////////
-const adminRoutes=require('./routers/admin')
+// const adminRoutes=require('./routers/admin')
 const lafRoutes=require('./routers/lafItem')
 const userRoutes = require("./routers/user");
 const homeRoutes = require("./routers/home");
-app.use(adminRoutes)
+const imageRouters = require("./routers/image");
+// app.use(adminRoutes)
 app.use(lafRoutes)
 app.use(userRoutes);
 app.use(homeRoutes);
+app.use(imageRouters);
 
 ////////////////////////////////////Router for UI Rendering//////////////////////////////////
 const router = new express.Router();

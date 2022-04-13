@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
-import { View, StyleSheet, Pressable, Platform } from "react-native";
+import { View, StyleSheet, Pressable, Platform, Text } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE, Overlay } from "react-native-maps";
 import { TextInput } from "react-native-paper";
 import * as Location from "expo-location";
-import { BUILDING_DATA } from "./map.image.location";
+import { BUILDING_DATA } from "./map.building.location";
+// import { OVERLAY_DATA } from "./map.overlay";
 import MapModal from "./map.modal";
 import { EvilIcons } from "@expo/vector-icons";
-import CollegeTile from "./mapmin.png";
 
 const mapStyle = [
   {
@@ -154,32 +154,51 @@ const MapPage = () => {
           customMapStyle={mapStyle}
           provider={PROVIDER_GOOGLE}
           showsUserLocation={true}
-          region={staticLocation}
-          onRegionChangeComplete={restrictMapBoundaries}
+          region={{
+            latitude: 27.7081557,
+            longitude: 85.3252162,
+            latitudeDelta: 0.00190,
+            longitudeDelta: 0.00190,
+          }}
+          // onRegionChangeComplete={restrictMapBoundaries}
           maxZoomLevel={20}
           minZoomLevel={18}
-          mapType={Platform.OS == "android" ? "none" : "standard"}
+          mapType={Platform.OS == "android" ? "standard" : "standard"}
         >
           {filteredBuildingInfo.map((each, index) => (
-            <Marker
-              coordinate={{
-                latitude: each.coordinates[0],
-                longitude: each.coordinates[1],
-              }}
-              key={index}
-              onPress={() => {
-                setCurrentBuildingIndex(index + 1);
-                setModalVisible(true);
-              }}
-            />
+            <>
+              <Marker
+                coordinate={{
+                  latitude: each.coordinates[0],
+                  longitude: each.coordinates[1],
+                }}
+                key={index}
+                onPress={() => {
+                  setCurrentBuildingIndex(index);
+                  setModalVisible(true);
+                }}
+              >
+                <Text>{index + 1}</Text>
+              </Marker>
+            </>
           ))}
-          <Overlay
-            image={CollegeTile}
+          {/* <Overlay
+            image={require("./Maps.png")}
             bounds={[
-              [27.7072057, 85.3246762],
-              [27.7094557, 85.3263862],
+              [27.7097098, 85.3244882],
+              [27.7073300, 85.3259851],
             ]}
-          />
+          /> */}
+          {/* {OVERLAY_DATA.map((each, index) => (
+            <Overlay
+              image={each.uri}
+              bounds={[
+                each.coordinates,
+                [each.coordinates[0] + 0.0001, each.coordinates[1] + 0.0001],
+              ]}
+              key={index}
+            />
+          ))} */}
         </MapView>
       </View>
     </View>

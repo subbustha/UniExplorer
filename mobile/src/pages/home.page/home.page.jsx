@@ -9,26 +9,24 @@ import {
   ScrollView,
 } from "react-native";
 import { Button, Card, Paragraph, Title } from "react-native-paper";
-import StaticBuildingData from "./buildings.info.json";
 import { AntDesign, EvilIcons } from "@expo/vector-icons";
 import axios from "axios";
 
 const CollegeCard = ({
-  collegeName = "",
-  collegeImageUrl = "",
+  buildingName = "",
+  buildingImageString = "",
   setActiveBuilding,
   setModalVisible,
   index,
 }) => {
+  const imageSource = buildingImageString
+    ? { uri: buildingImageString }
+    : require("../../../assets/loading.png");
   return (
     <Card style={{ width: "100%", marginVertical: 10 }}>
-      <Card.Cover
-        source={{
-          uri: collegeImageUrl[0],
-        }}
-      />
+      <Card.Cover source={imageSource} style={{ resizeMode: "contain" }} />
       <Card.Actions style={{ flexDirection: "row" }}>
-        <Title style={{ flex: 1 }}>{collegeName}</Title>
+        <Title style={{ flex: 1 }}>{buildingName}</Title>
         <Button
           onPress={() => {
             setModalVisible(true);
@@ -64,7 +62,7 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 20,
     borderTopLeftRadius: 20,
     width: "100%",
-    backgroundColor: "#d9d9d9",
+    backgroundColor: "#f5f5f5",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -104,13 +102,20 @@ const EachModal = ({
   setModalVisible,
   imageList = [],
   description = "",
-  name = "",
+  buildingName = "",
 }) => {
   const [imageIndex, setImageIndex] = useState(0);
+  const [imageString, setImageString] = useState("");
 
   useEffect(() => {
-    setImageIndex(0);
-  }, [imageList]);
+    axios
+      .get("http://localhost:5000/api/image/" + imageList[imageIndex])
+      .then(({ data }) => setImageString(data))
+      .catch((error) => {});
+    return () => {
+      setImageIndex(0);
+    };
+  }, [imageList, imageIndex]);
 
   return (
     <Modal
@@ -141,12 +146,14 @@ const EachModal = ({
               marginVertical: 10,
             }}
           >
-            {name}
+            {buildingName}
           </Text>
           <Image
-            source={{
-              uri: imageList[imageIndex],
-            }}
+            source={
+              imageString
+                ? { uri: imageString }
+                : require("../../../assets/loading.png")
+            }
             style={{
               width: 360,
               height: 250,
@@ -204,16 +211,25 @@ const EachModal = ({
 export default function HomePage() {
   const [modalVisible, setModalVisible] = useState(false);
   const [activeBuilding, setActiveBuilding] = useState(0);
-  const [BuildingData, setBuildingData] = useState(StaticBuildingData);
+  const [buildingData, setBuildingData] = useState([
+    { buildingName: "", images: [], description: "" },
+  ]);
+  const [imageData, setImageData] = useState([]);
 
   useEffect(() => {
     axios
-      .get(
-        "https://drive.google.com/uc?export=view&id=1uv17_XyFPBmBbfc5yWUGPFoIjDdRE1EO"
-      )
+      .get("http://localhost:5000/api/home")
       .then((response) => {
         if (response.data && response.data.length !== 0) {
           setBuildingData(response.data);
+          response.data.forEach(async (building) => {
+            axios
+              .get("http://localhost:5000/api/image/" + building.images[0])
+              .then(({ data }) =>
+                setImageData((previous) => [...previous, data])
+              )
+              .catch((error) => {});
+          });
         }
       })
       .catch((error) => {});
@@ -225,14 +241,14 @@ export default function HomePage() {
         <EachModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
-          imageList={BuildingData[activeBuilding].images}
-          description={BuildingData[activeBuilding].description}
-          name={BuildingData[activeBuilding].name}
+          imageList={buildingData[activeBuilding].images || []}
+          description={buildingData[activeBuilding].description || ""}
+          name={buildingData[activeBuilding].buildingName || ""}
         />
-        {BuildingData.map((data, index) => (
+        {buildingData.map((data, index) => (
           <CollegeCard
-            collegeName={data.name}
-            collegeImageUrl={data.images}
+            buildingName={data.buildingName}
+            buildingImageString={imageData[index]}
             key={index}
             index={index}
             setModalVisible={setModalVisible}

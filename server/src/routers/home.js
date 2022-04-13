@@ -1,7 +1,8 @@
 const express = require("express");
 const authAdmin = require("../middleware/authAdmin");
-const userAuth  = require("../middleware/authUser");
+const userAuth = require("../middleware/authUser");
 const Home = require("../models/homeModel");
+const Image = require("../models/imageModel");
 const multer = require("multer");
 const sharp = require("sharp");
 const upload = multer({
@@ -21,7 +22,7 @@ const upload = multer({
 });
 const router = new express.Router();
 
-//Router to create item
+//Router to create building
 router.post(
   "/api/home/create",
   upload.single("images"),
@@ -45,30 +46,32 @@ router.post(
           .resize({ width: 300, height: 300 })
           .png({ quality: 10 })
           .toBuffer();
-        request.body.images = [buffer];
+        const image = new Image({ image: buffer });
+        const result = await image.save();
+        request.body.images = [result._id];
       }
-
       const home = new Home(request.body);
       await home.save();
       response.status(201).send(home);
     } catch (error) {
-        console.log(error);
+      console.log(error);
       response.status(500).send("Internal Server Error");
     }
   }
 );
-//Router to get all items
-router.get("/api/home",userAuth, async (request, response) => {
+//Router to get all buildings
+router.get("/api/home", async (request, response) => {
   try {
-    const items = await Item.find({});
-    if (!items) {
+    const buildings = await Home.find({});
+    if (!buildings) {
       return response.status(404).send("Items not found");
     }
-    response.status(200).send(items);
+    response.status(200).send(buildings);
   } catch (error) {
     response.status(500).send("Internal Server Error");
   }
 });
+
 //Router to update an item with id
 router.patch("/api/home/:id", authAdmin, async (request, response) => {
   if (!request.admin.super) {

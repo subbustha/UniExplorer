@@ -12,7 +12,8 @@ const homeSchema = new Schema({
   },
   images: {
     //Image for the building
-    type: [Buffer],
+    type: [Schema.Types.ObjectId],
+    default: [],
   },
   description: {
     // Who has claimed the item
