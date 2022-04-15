@@ -1,10 +1,31 @@
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import { Button, TextInput } from "react-native-paper";
+import { TextInput } from "react-native-paper";
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
+import { sendFeedback } from "../../utils/api/feedback-api";
 
 const FeedbackPage = () => {
   const [feedbackContent, setFeedbackContent] = useState("");
+
+  const sendFeedbackButtonHandler = async () => {
+    if (feedbackContent) {
+      try {
+        const result = await sendFeedback(feedbackContent);
+        console.log(result);
+        if (result === true) {
+          alert("Thank you for your feedback");
+        } else {
+          alert(
+            "Could not submit feedback. Please check your internet connection."
+          );
+        }
+      } catch (error) {
+        alert(
+          "Could not submit feedback. Please check your internet connection."
+        );
+      }
+    }
+  };
 
   return (
     <View
@@ -46,10 +67,7 @@ const FeedbackPage = () => {
             width: 80,
             alignItems: "center",
           }}
-          onPress={() => {
-            alert("Thank you for your feedback.");
-            setFeedbackContent("");
-          }}
+          onPress={sendFeedbackButtonHandler}
         >
           <Text style={{ color: "white", padding: 10 }}>Submit</Text>
         </Pressable>

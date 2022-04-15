@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import { FlatList, SafeAreaView, View, Text } from "react-native";
 import { TextInput, DefaultTheme } from "react-native-paper";
 import CardComponent from "../../components/card.component/card.component";
-import { API_URL } from "../../utils/constants/regiser.constant";
-import axios from "axios";
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 import { AntDesign } from "@expo/vector-icons";
+import { getLostAndFoundData } from "../../utils/api/lostandfound-api";
 
 const LostAndFoundPage = () => {
   const [currentInput, setCurrentInput] = useState("");
@@ -13,7 +12,12 @@ const LostAndFoundPage = () => {
   const [searchData, setSearchData] = useState([]);
 
   useEffect(() => {
-    getItemsData();
+    getLostAndFoundData()
+      .then((result) => {
+        setCompleteData(result);
+        setSearchData(result);
+      })
+      .catch(() => {});
   }, []);
 
   const searchDataCollection = (text) => {
@@ -25,16 +29,6 @@ const LostAndFoundPage = () => {
           each.location.toLowerCase().includes(text.toLowerCase())
       )
     );
-  };
-
-  const getItemsData = () => {
-    axios
-      .get(API_URL.GET_LAS_ITEM)
-      .then((response) => {
-        setCompleteData(response.data);
-        setSearchData(response.data);
-      })
-      .catch();
   };
 
   const renderItem = ({ item }) => <CardComponent {...item} />;

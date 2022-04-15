@@ -1,7 +1,7 @@
 const { Router } = require("express");
 
 const router = new Router();
-const authAdmin = require("../middleware/authAdmin");
+const authUser = require("../middleware/authUser");
 const ObjectId = require("mongoose").Types.ObjectId;
 const multer = require("multer");
 const sharp = require("sharp");
@@ -23,12 +23,21 @@ const upload = multer({
 const Image = require("../models/imageModel");
 const Home = require("../models/homeModel");
 const LostAndFound = require("../models/lafModel");
+const {
+  UNAUTHORIZED,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
+} = require("../services/http-response");
 
-router.get("/api/image/:imageId", async (request, response) => {
+router.get("/api/image/:imageId", authUser, async (request, response) => {
   try {
     let imageId = request.params.imageId;
-    console.log(imageId);
-    let image = await Image.findOne({ _id: new ObjectId(imageId) });
+    let image = null;
+    try {
+      image = await Image.findOne({ _id: new ObjectId(imageId) });
+    } catch (e) {
+      return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
+    }
     image = image.toObject();
     delete image._id;
     delete image.__v;
@@ -36,15 +45,20 @@ router.get("/api/image/:imageId", async (request, response) => {
       .status(200)
       .send(`data:image/png;base64,${image.image.toString("base64")}`);
   } catch (error) {
-    response.status(500).send("Internal Server Error");
+    response
+      .status(INTERNAL_SERVER_ERROR.status)
+      .send(INTERNAL_SERVER_ERROR.message);
   }
 });
 
 router.post(
   "/api/image",
-  authAdmin,
+  authUser,
   upload.single("image"),
   async (request, response) => {
+    if (!request.isAdmin) {
+      return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
+    }
     if (request.fileExist) {
       if (!request.validFile) {
         return response.status(406).send("Invalid Data Provided");
@@ -87,6 +101,5 @@ router.post(
   }
 );
 
-router.post("/api/image/create");
 
 module.exports = router;

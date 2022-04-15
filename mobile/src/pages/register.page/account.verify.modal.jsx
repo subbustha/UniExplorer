@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Button, TextInput } from "react-native-paper";
-import { RESPONSE, registerConstants } from "../../utils/index";
+import RESPONSE from "../../utils/api/http-response";
+import { SMART_LOGIN, API_URL } from "../register.page/regiser.constant";
 
 const AccontVerifyModal = ({ modalVisible, setModalVisible, email }) => {
   const [loading, setLoading] = useState(false);
@@ -17,14 +18,10 @@ const AccontVerifyModal = ({ modalVisible, setModalVisible, email }) => {
   const [accessCode, setAccessCode] = useState("");
   const [activateCodeError, setActivateCodeError] = useState(false);
 
-  const {
-    SMART_LOGIN: { label },
-  } = registerConstants;
+  const { label } = SMART_LOGIN;
 
   const sendAcitvationCodeToMail = async () => {
-    const {
-      API_URL: { ACTIVATION_CODE },
-    } = registerConstants;
+    const { ACTIVATION_CODE } = API_URL;
     setLoading(true);
     try {
       const config = {
@@ -86,11 +83,12 @@ const AccontVerifyModal = ({ modalVisible, setModalVisible, email }) => {
         <TouchableOpacity
           style={styles.modalBackground}
           activeOpacity={0}
-          onPress={() =>{ 
+          onPress={() => {
             setLoading(false);
             setAccessCode("");
             setActivateCodeError(false);
-            setModalVisible(false);}}
+            setModalVisible(false);
+          }}
         ></TouchableOpacity>
         <View style={styles.centeredView}>
           {codeSendMode ? (

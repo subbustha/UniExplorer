@@ -1,21 +1,20 @@
-//Copy paste of the auth.js code
-//Only difference is the authentication modal is User instead of Admin
+//Authentication for admin verification.
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModal");
 const log = require("../services/logger");
 const {
   UNAUTHORIZED,
+  INVALID_DATA_PROVIDED,
   INTERNAL_SERVER_ERROR,
 } = require("../services/http-response");
-
-const fileName = "authUser";
-const authUser = async (request, response, next) => {
-  const methodName = "authUser";
+const fileName = "adminCreateMiddleware";
+const adminAccessMiddleware = async (request, response, next) => {
+  const methodName = "adminCreateMiddleware";
   try {
     const authToken = request.header("Authorization");
     if (!authToken || (authToken + "").toLowerCase() === "null") {
-      log.warn(fileName, methodName, UNAUTHORIZED.message);
-      return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
+      log.info(fileName, methodName, "Regular user account create detected");
+      return next();
     }
     const token = authToken.replace("Bearer ", "");
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -24,12 +23,12 @@ const authUser = async (request, response, next) => {
       log.warn(fileName, methodName, UNAUTHORIZED.message);
       return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
     }
-    request.isAdmin = !!user.isAdmin;
+    if (!user.isAdmin) {
+      log.warn(fileName, methodName, UNAUTHORIZED.message);
+      return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
+    }
     request.isSuperAdminRequest =
       user.email.toLowerCase() === process.env.SUPER_ADMIN;
-    request.user = user;
-    request.token = token;
-    request.userId = decoded._id;
     next();
   } catch (error) {
     log.error(fileName, methodName, error);
@@ -39,4 +38,4 @@ const authUser = async (request, response, next) => {
   }
 };
 
-module.exports = authUser;
+module.exports = adminAccessMiddleware;

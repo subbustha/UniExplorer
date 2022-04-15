@@ -10,7 +10,9 @@ import {
 } from "react-native";
 import { Button, Card, Paragraph, Title } from "react-native-paper";
 import { AntDesign, EvilIcons } from "@expo/vector-icons";
-import axios from "axios";
+import { getHomePageData } from "../../utils/api/homedata-api";
+import { getImageById } from "../../utils/api/image-api";
+
 
 const CollegeCard = ({
   buildingName = "",
@@ -21,7 +23,7 @@ const CollegeCard = ({
 }) => {
   const imageSource = buildingImageString
     ? { uri: buildingImageString }
-    : require("../../../assets/loading.png");
+    : require("../../images/common/loading.png");
   return (
     <Card style={{ width: "100%", marginVertical: 10 }}>
       <Card.Cover source={imageSource} style={{ resizeMode: "contain" }} />
@@ -108,10 +110,9 @@ const EachModal = ({
   const [imageString, setImageString] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/image/" + imageList[imageIndex])
-      .then(({ data }) => setImageString(data))
-      .catch((error) => {});
+    getImageById(imageList[imageIndex])
+      .then((result) => setImageString(result))
+      .catch(() => {});
     return () => {
       setImageIndex(0);
     };
@@ -152,7 +153,7 @@ const EachModal = ({
             source={
               imageString
                 ? { uri: imageString }
-                : require("../../../assets/loading.png")
+                : require("../../images/common/loading.png")
             }
             style={{
               width: 360,
@@ -217,23 +218,23 @@ export default function HomePage() {
   const [imageData, setImageData] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/home")
-      .then((response) => {
-        if (response.data && response.data.length !== 0) {
-          setBuildingData(response.data);
-          response.data.forEach(async (building) => {
-            axios
-              .get("http://localhost:5000/api/image/" + building.images[0])
-              .then(({ data }) =>
-                setImageData((previous) => [...previous, data])
-              )
-              .catch((error) => {});
-          });
-        }
-      })
-      .catch((error) => {});
+    useHomePageApi();
   }, []);
+
+  const useHomePageApi = async () => {
+    try {
+      const result = await getHomePageData();
+      if (result) {
+        setBuildingData(result);
+        result.forEach(async (building) => {
+          const imageValue = await getImageById(building.images[0]);
+          setImageData((previous) => [...previous, imageValue]);
+        });
+      }
+    } catch (e) {
+      return;
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -243,7 +244,7 @@ export default function HomePage() {
           setModalVisible={setModalVisible}
           imageList={buildingData[activeBuilding].images || []}
           description={buildingData[activeBuilding].description || ""}
-          name={buildingData[activeBuilding].buildingName || ""}
+          buildingName={buildingData[activeBuilding].buildingName || ""}
         />
         {buildingData.map((data, index) => (
           <CollegeCard

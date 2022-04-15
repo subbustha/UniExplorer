@@ -13,7 +13,7 @@ const itemSchema = new Schema({
   },
   image: {
     //Image for the pizza
-    type: Buffer,
+    type: Schema.Types.ObjectId,
   },
   location: {
     //Location where the item was discovered

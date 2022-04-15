@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Button, TextInput, Surface } from "react-native-paper";
-import { RESPONSE, registerConstants } from "../../utils/index";
+import RESPONSE from "../../utils/api/http-response";
+import { SMART_LOGIN, API_URL } from "../register.page/regiser.constant";
 
 const PasswordResetModal = ({ modalVisible, setModalVisible, email }) => {
   const [loading, setLoading] = useState(false);
@@ -18,15 +19,10 @@ const PasswordResetModal = ({ modalVisible, setModalVisible, email }) => {
   const [password, setNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
   const [resetCodeError, setResetCodeError] = useState(false);
-
-  const {
-    SMART_LOGIN: { label },
-  } = registerConstants;
+  const { label } = SMART_LOGIN;
 
   const sendResetCodeToMail = async () => {
-    const {
-      API_URL: { PASSWORD_RESET_CODE },
-    } = registerConstants;
+    const { PASSWORD_RESET_CODE } = API_URL;
     setLoading(true);
     try {
       const config = {

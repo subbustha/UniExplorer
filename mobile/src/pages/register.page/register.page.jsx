@@ -9,21 +9,26 @@ import {
   Surface,
   Text,
 } from "react-native-paper";
-import { registerConstants, validators, RESPONSE } from "../../utils/index";
+import { SMART_LOGIN, VIEWS, API_URL } from "./regiser.constant";
+import {
+  emailValidator,
+  passwordValidator,
+  fullNameValidator,
+} from "../../utils/validators/validators";
+import RESPONSE from "../../utils/api/http-response";
 import { DefaultTheme } from "react-native-paper";
-import CollegeLogo from "../../../assets/logo.page/logo.png";
+import CollegeLogo from "../../images/logo.page/logo.png";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import AccontVerifyModal from "./account.verify.modal";
 import PasswordResetModal from "./password.reset.modal";
+import {
+  lookupUserAccount,
+  createUserAccount,
+  loginUserAccount,
+} from "../../utils/api/user-api";
 
-
-const {
-  VIEWS,
-  SMART_LOGIN: { header, subHeader, label, button },
-  API_URL,
-} = registerConstants;
-const { emailValidator, passwordValidator, fullNameValidator } = validators;
+const { header, subHeader, label, button } = SMART_LOGIN;
 
 const RegisterPage = (props) => {
   const [modalAccountActivateVisible, setModalAccountActivateVisible] =
@@ -89,18 +94,18 @@ const RegisterPage = (props) => {
   const handleAccountRegister = () => {
     switch (currentView) {
       case VIEWS.LOOKUP_VIEW:
-        lookupUserAccount();
+        lookupUserAccountViaApi();
         break;
       case VIEWS.CREATE_VIEW:
-        createUserAccount();
+        createUserAccountViaApi();
         break;
       case VIEWS.LOGIN_VIEW:
-        loginUserAccount();
+        loginUserAccountViaApi();
         break;
     }
   };
 
-  const lookupUserAccount = async () => {
+  const lookupUserAccountViaApi = async () => {
     if (emailError.message !== label.email.name) {
       return setEmailError({ ...emailError, visible: true });
     }
@@ -109,27 +114,24 @@ const RegisterPage = (props) => {
     }
     setLoading(true);
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        validateStatus: (status) => status < 500,
-      };
-      const { status } = await axios.get(API_URL.LOOKUP + "/" + email, config);
-      if (status === RESPONSE.OK) {
-        setCurrentView(VIEWS.LOGIN_VIEW);
-      } else if (status === RESPONSE.NOT_FOUND) {
-        setCurrentView(VIEWS.CREATE_VIEW);
-      } else if (status === RESPONSE.CONFLICT) {
-        setModalAccountActivateVisible(true);
+      const result = await lookupUserAccount(email);
+      if (result) {
+        if (result === "LOGIN") {
+          setCurrentView(VIEWS.LOGIN_VIEW);
+        } else if (result === "CREATE") {
+          setCurrentView(VIEWS.CREATE_VIEW);
+        } else if (result === "ACTIVATE") {
+          setModalAccountActivateVisible(true);
+        }
       }
     } catch (error) {
+      console.log(error);
       alert("Something went wrong. Please try again later.");
     }
     setLoading(false);
   };
 
-  const createUserAccount = async () => {
+  const createUserAccountViaApi = async () => {
     if (!fullName) {
       return setFullNameError({
         visible: true,
@@ -147,17 +149,8 @@ const RegisterPage = (props) => {
     }
     setLoading(true);
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-      const { status } = await axios.post(
-        API_URL.CREATE,
-        { email, password, fullName },
-        config
-      );
-      if (status === RESPONSE.CREATED) {
+      const result = await createUserAccount({ email, password, fullName });
+      if (result) {
         setCurrentView(VIEWS.LOGIN_VIEW);
         setModalAccountActivateVisible(true);
         Alert.alert("Congratulations!", "You account has been created");
@@ -168,7 +161,7 @@ const RegisterPage = (props) => {
     setLoading(false);
   };
 
-  const loginUserAccount = async () => {
+  const loginUserAccountViaApi = async () => {
     if (!password) {
       return setPasswordError({
         visible: true,
@@ -178,31 +171,18 @@ const RegisterPage = (props) => {
     setPasswordError({ visible: false, message: label.password.required });
     setLoading(true);
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        validateStatus: (status) => status < 500,
-      };
-      const { data, status } = await axios.post(
-        API_URL.LOGIN,
-        {
-          email,
-          password,
-        },
-        config
-      );
-      if (status === RESPONSE.OK) {
+      const [unauth, data] = await loginUserAccount({ email, password });
+      if (data) {
         await AsyncStorage.setItem(label.USER_TOKEN, JSON.stringify(data));
         setLoading(false);
         props.navigation.reset({
           index: 0,
           routes: [{ name: "ActivityScreen" }],
         });
-      } else if (status === RESPONSE.UNAUTHORIZED) {
+      } else if (unauth && !data) {
         Alert.alert("", "Invalid Email / Password");
         setLoading(false);
-      } else if (status === RESPONSE.CONFLICT) {
+      } else if (!unauth && !data) {
         setModalAccountActivateVisible(true);
         setLoading(false);
       }

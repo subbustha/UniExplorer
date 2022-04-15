@@ -2,6 +2,7 @@ const { Router } = require("express");
 const router = new Router();
 const User = require("../models/userModal");
 const authUser = require("../middleware/authUser");
+const adminAccessMiddleware = require("../middleware/adminAccessMiddleware");
 const {
   sendResetVerificationCode,
   sendCreateAccountVerificationCode,
@@ -106,39 +107,54 @@ router.post("/api/user/logout", authUser, async (request, response) => {
 });
 
 //Router for creating a new user
-router.post("/api/user/create", async (request, response) => {
-  const methodName = "UserCreateRoute";
-  try {
-    let { email = null, password = null, fullName = null } = request.body;
-    if (
-      !email ||
-      !password ||
-      !fullName ||
-      !isEmailValid(email) ||
-      !isPasswordValid(password) ||
-      !isNameValid(fullName)
-    ) {
-      log.warn(fileName, methodName, INVALID_DATA_PROVIDED.message);
-      return response
-        .status(INVALID_DATA_PROVIDED.status)
-        .send(INVALID_DATA_PROVIDED.message);
+router.post(
+  "/api/user/create",
+  adminAccessMiddleware,
+  async (request, response) => {
+    const methodName = "UserCreateRoute";
+    try {
+      let { email = null, password = null, fullName = null } = request.body;
+      if (
+        !email ||
+        !password ||
+        !fullName ||
+        !isEmailValid(email) ||
+        !isPasswordValid(password) ||
+        !isNameValid(fullName)
+      ) {
+        log.warn(fileName, methodName, INVALID_DATA_PROVIDED.message);
+        return response
+          .status(INVALID_DATA_PROVIDED.status)
+          .send(INVALID_DATA_PROVIDED.message);
+      }
+      email = email.toLowerCase();
+      const userExists = await User.findByEmail(email);
+      if (userExists) {
+        log.warn(fileName, methodName, CONFLICT.message);
+        return response.status(CONFLICT.status).send(CONFLICT.message);
+      }
+      let user = null;
+      if (request.isSuperAdminRequest) {
+        user = new User({
+          email,
+          password,
+          fullName,
+          emailVerified: true,
+          isAdmin: true,
+        });
+      } else {
+        user = new User({ email, password, fullName });
+      }
+      await user.save();
+      response.status(CREATED.status).send(CREATED.message);
+    } catch (error) {
+      log.error(fileName, methodName, error);
+      response
+        .status(INTERNAL_SERVER_ERROR.status)
+        .send(INTERNAL_SERVER_ERROR.message);
     }
-    email = email.toLowerCase();
-    const userExists = await User.findByEmail(email);
-    if (userExists) {
-      log.warn(fileName, methodName, CONFLICT.message);
-      return response.status(CONFLICT.status).send(CONFLICT.message);
-    }
-    const user = new User({ email, password, fullName });
-    await user.save();
-    response.status(CREATED.status).send(CREATED.message);
-  } catch (error) {
-    log.error(fileName, methodName, error);
-    response
-      .status(INTERNAL_SERVER_ERROR.status)
-      .send(INTERNAL_SERVER_ERROR.message);
   }
-});
+);
 
 //Router for getting user data
 router.get("/api/user", authUser, (request, response) => {
@@ -158,6 +174,24 @@ router.get("/api/user", authUser, (request, response) => {
 router.delete("/api/user", authUser, async (request, response) => {
   const methodName = "UserDeleteRoute";
   try {
+    if (request.isSuperAdminRequest) {
+      const email = request.body.email;
+      if (!email) {
+        return response
+          .status(INVALID_DATA_PROVIDED.status)
+          .send(INVALID_DATA_PROVIDED.message);
+      }
+      if(email.toLowerCase() === process.env.SUPER_ADMIN){
+        return response.status(CONFLICT.status).send(CONFLICT.message);
+      }
+      const admin = await User.findOne({ email, isAdmin: true });
+      if (!admin) {
+        return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
+      }
+      await admin.remove();
+      log.info(fileName, methodName, OK.message);
+      return response.status(OK.status).send(OK.message);
+    }
     const email = request.user.email.toLowerCase();
     const user = await User.findOne({ email });
     if (!user) {
@@ -280,7 +314,6 @@ router.patch("/api/user/send/reset", async (request, response) => {
 router.patch("/api/user/reset", async (request, response) => {
   const methodName = "UserPasswordResetRoute";
   let { email = null, accessCode = null, password = null } = request.body;
-  console.log(email, password, accessCode);
   if (
     !email ||
     !isEmailValid(email) ||

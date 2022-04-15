@@ -14,12 +14,13 @@ const lafRoutes=require('./routers/lafItem')
 const userRoutes = require("./routers/user");
 const homeRoutes = require("./routers/home");
 const imageRouters = require("./routers/image");
+const feedbackRouters = require("./routers/feedback");
 // app.use(adminRoutes)
 app.use(lafRoutes)
 app.use(userRoutes);
 app.use(homeRoutes);
 app.use(imageRouters);
-
+app.use(feedbackRouters);
 ////////////////////////////////////Router for UI Rendering//////////////////////////////////
 const router = new express.Router();
 app.use(router);

@@ -1,16 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Image, Text } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Paragraph } from "react-native-paper";
+import { getImageById } from "../../utils/api/image-api";
 
 const CardComponent = (props) => {
   const {
     name = "Not provided",
     image = "",
     location = "Not provided",
-    color = null,
     claimedBy = "",
   } = props;
+
+  const [imageValue, setImageValue] = useState("");
+
+  useEffect(() => {
+    if (image) {
+      getImageById(image)
+        .then((result) => setImageValue(result))
+        .catch(() => {});
+    }
+  }, []);
 
   return (
     <View
@@ -19,11 +27,11 @@ const CardComponent = (props) => {
         width: 400,
         height: 150,
         marginTop: 10,
-        elevation:2
+        elevation: 2,
       }}
     >
       <Image
-        source={{ uri: `data:image/png;base64,${image}` }}
+        source={imageValue ? { uri: imageValue } : require("../../images/common/loading.png")}
         style={{ width: 150, height: 150, backgroundColor: "black" }}
       />
       <View
@@ -56,7 +64,7 @@ const CardComponent = (props) => {
           </Text>
         </View>
 
-        <Text style={{ marginLeft: 10, fontSize:11 }}>
+        <Text style={{ marginLeft: 10, fontSize: 11 }}>
           Claimed: {claimedBy ? claimedBy : "None"}
         </Text>
       </View>

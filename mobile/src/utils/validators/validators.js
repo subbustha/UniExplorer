@@ -1,4 +1,4 @@
-import { SMART_LOGIN } from "../constants/regiser.constant";
+import { SMART_LOGIN } from "../../pages/register.page/regiser.constant";
 
 const {
   label: { email, password, fullName },

@@ -1,10 +1,10 @@
 const express = require("express");
-const authAdmin = require("../middleware/authAdmin");
-const userAuth = require("../middleware/authUser");
+const authUser = require("../middleware/authUser");
 const Home = require("../models/homeModel");
 const Image = require("../models/imageModel");
 const multer = require("multer");
 const sharp = require("sharp");
+const { UNAUTHORIZED } = require("../services/http-response");
 const upload = multer({
   limits: {
     fileSize: 10000000,
@@ -24,9 +24,13 @@ const router = new express.Router();
 
 //Router to create building
 router.post(
-  "/api/home/create",
+  "/api/home",
+  authUser,
   upload.single("images"),
   async (request, response) => {
+    if(!request.isAdmin) {
+      return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
+    }
     if (request.fileExist) {
       if (!request.validFile) {
         return response.status(406).send("Invalid Data Provided");
@@ -44,7 +48,7 @@ router.post(
       if (request.file) {
         const buffer = await sharp(request.file.buffer)
           .resize({ width: 300, height: 300 })
-          .png({ quality: 10 })
+          .png({ quality: 20 })
           .toBuffer();
         const image = new Image({ image: buffer });
         const result = await image.save();
@@ -54,13 +58,12 @@ router.post(
       await home.save();
       response.status(201).send(home);
     } catch (error) {
-      console.log(error);
       response.status(500).send("Internal Server Error");
     }
   }
 );
 //Router to get all buildings
-router.get("/api/home", async (request, response) => {
+router.get("/api/home", authUser, async (request, response) => {
   try {
     const buildings = await Home.find({});
     if (!buildings) {
@@ -73,9 +76,9 @@ router.get("/api/home", async (request, response) => {
 });
 
 //Router to update an item with id
-router.patch("/api/home/:id", authAdmin, async (request, response) => {
-  if (!request.admin.super) {
-    return response.status(401).send("Unauthorized");
+router.patch("/api/home/:id", authUser, async (request, response) => {
+  if (!request.isAdmin) {
+    return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
   }
   const itemData = Object.keys(request.body);
   const allowedData = ["name", "prices", "description", "available", "picture"];
@@ -98,9 +101,9 @@ router.patch("/api/home/:id", authAdmin, async (request, response) => {
   }
 });
 //Router to delete an item with id
-router.delete("/api/home/:id", authAdmin, async (request, response) => {
-  if (!request.admin.super) {
-    return response.status(401).send("Unauthorized");
+router.delete("/api/home/:id", authUser, async (request, response) => {
+  if (!request.isAdmin) {
+    return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
   }
   try {
     const item = await Item.findById({ _id: request.params.id });

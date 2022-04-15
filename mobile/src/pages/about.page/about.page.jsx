@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
-import CollegeLogo from "../../../assets/logo.page/logo.png";
+import CollegeLogo from "../../images/logo.page/logo.png";
 
 const styles = StyleSheet.create({
   container: {

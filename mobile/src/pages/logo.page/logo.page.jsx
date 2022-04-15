@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Image, View, ImageBackground, Alert } from "react-native";
-import BackgroundLogo from "../../../assets/logo.page/background.png";
-import { verifyIfUserIsLoggedIn } from "../../auth/authentication";
-import NetInfo from "@react-native-community/netinfo";
+import BackgroundLogo from "../../images/logo.page/background.png";
+import { verifyIfUserIsLoggedIn } from "../../utils/api/authentication";
+// import NetInfo from "@react-native-community/netinfo";
 
 export default function LogoPage({ navigation }) {
   useEffect(() => {
@@ -13,6 +13,7 @@ export default function LogoPage({ navigation }) {
     setTimeout(async () => {
       try {
         const isUserVerified = await verifyIfUserIsLoggedIn();
+        console.log("isUserVerified = " + isUserVerified);
         navigation.reset({
           index: 0,
           routes: [
