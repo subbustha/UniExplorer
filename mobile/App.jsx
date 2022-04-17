@@ -72,8 +72,8 @@ const DrawerNavigatorLogo = (props) => {
             <FontAwesome name="sign-out" size={30} />
           </View>
         )}
-        onPress={() => {
-          logOutUser();
+        onPress={async () => {
+          await logOutUser();
           props.navigation.reset({
             index: 0,
             routes: [{ name: "RegisterScreen" }],

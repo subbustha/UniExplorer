@@ -15,11 +15,9 @@ import {
   passwordValidator,
   fullNameValidator,
 } from "../../utils/validators/validators";
-import RESPONSE from "../../utils/api/http-response";
 import { DefaultTheme } from "react-native-paper";
 import CollegeLogo from "../../images/logo.page/logo.png";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import AccontVerifyModal from "./account.verify.modal";
 import PasswordResetModal from "./password.reset.modal";
 import {
@@ -116,6 +114,7 @@ const RegisterPage = (props) => {
     try {
       const result = await lookupUserAccount(email);
       if (result) {
+        console.log("result = "+result);
         if (result === "LOGIN") {
           setCurrentView(VIEWS.LOGIN_VIEW);
         } else if (result === "CREATE") {
@@ -151,8 +150,7 @@ const RegisterPage = (props) => {
     try {
       const result = await createUserAccount({ email, password, fullName });
       if (result) {
-        setCurrentView(VIEWS.LOGIN_VIEW);
-        setModalAccountActivateVisible(true);
+        setCurrentView(VIEWS.LOOKUP_VIEW);
         Alert.alert("Congratulations!", "You account has been created");
       }
     } catch (error) {

@@ -42,7 +42,6 @@ const LostAndFoundPage = () => {
           value={currentInput}
           onChangeText={(text) => searchDataCollection(text)}
           mode="outlined"
-          outlineColor={DefaultTheme.colors.primary}
           style={{ flex: 1 }}
         />
         <Pressable
@@ -54,7 +53,12 @@ const LostAndFoundPage = () => {
           }}
           onPress={() => {
             setCurrentInput("");
-            getItemsData();
+            getLostAndFoundData()
+              .then((result) => {
+                setCompleteData(result);
+                setSearchData(result);
+              })
+              .catch(() => {});
           }}
         >
           <AntDesign name="reload1" size={24} color="black" />

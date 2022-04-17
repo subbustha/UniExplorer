@@ -1,5 +1,10 @@
 import axios from "axios";
-import { USER_BASE_URL, getLocalAuthConfig } from "./constants";
+import {
+  USER_BASE_URL,
+  USER_LOGOUT_URL,
+  getLocalAuthConfig,
+} from "./constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const verifyIfUserIsLoggedIn = async () => {
   try {
@@ -18,9 +23,15 @@ const verifyIfUserIsLoggedIn = async () => {
 const logOutUser = async () => {
   try {
     await AsyncStorage.clear();
-    return true;
+    const config = await getLocalAuthConfig();
+    if (!config) {
+      return;
+    } else {
+      await axios.patch(USER_LOGOUT_URL, config);
+      return;
+    }
   } catch (error) {
-    return false;
+    return;
   }
 };
 

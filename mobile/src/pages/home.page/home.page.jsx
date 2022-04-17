@@ -1,37 +1,48 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  Pressable,
-  Image,
-  ScrollView,
-} from "react-native";
-import { Button, Card, Paragraph, Title } from "react-native-paper";
-import { AntDesign, EvilIcons } from "@expo/vector-icons";
+import { View, StyleSheet, Pressable, ScrollView } from "react-native";
+import { Button, Card, Title } from "react-native-paper";
+import { AntDesign } from "@expo/vector-icons";
 import { getHomePageData } from "../../utils/api/homedata-api";
 import { getImageById } from "../../utils/api/image-api";
-
+import { getLocalUserInfo } from "../../utils/api/constants";
+import ViewEditModal from "./viewedit.modal";
+import CreateModal from "./create.modal";
 
 const CollegeCard = ({
-  buildingName = "",
-  buildingImageString = "",
+  buildingInfo = { buildingName: "", images: [""], description: "" },
   setActiveBuilding,
   setModalVisible,
+  setCreateModalVisible,
   index,
 }) => {
-  const imageSource = buildingImageString
-    ? { uri: buildingImageString }
-    : require("../../images/common/loading.png");
+  const [imageString, setImageString] = useState("");
+
+  useEffect(() => {
+    if (buildingInfo.images[0]) {
+      getImageById(buildingInfo.images[0])
+        .then((result) => setImageString(result))
+        .catch((e) => setImageString(""));
+    } else {
+      setImageString("");
+    }
+  }, [buildingInfo]);
+
   return (
     <Card style={{ width: "100%", marginVertical: 10 }}>
-      <Card.Cover source={imageSource} style={{ resizeMode: "contain" }} />
+      <Card.Cover
+        source={
+          imageString
+            ? { uri: imageString }
+            : require("../../images/common/loading.png")
+        }
+        style={{ resizeMode: "contain" }}
+      />
       <Card.Actions style={{ flexDirection: "row" }}>
-        <Title style={{ flex: 1 }}>{buildingName}</Title>
+        <Title style={{ flex: 1 }}>{buildingInfo.buildingName}</Title>
         <Button
           onPress={() => {
             setModalVisible(true);
+            setCreateModalVisible(false);
             setActiveBuilding(index);
           }}
         >
@@ -99,164 +110,104 @@ const styles = StyleSheet.create({
   },
 });
 
-const EachModal = ({
-  modalVisible = false,
-  setModalVisible,
-  imageList = [],
-  description = "",
-  buildingName = "",
-}) => {
-  const [imageIndex, setImageIndex] = useState(0);
-  const [imageString, setImageString] = useState("");
+const HomePage = () => {
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
-    getImageById(imageList[imageIndex])
-      .then((result) => setImageString(result))
-      .catch(() => {});
-    return () => {
-      setImageIndex(0);
-    };
-  }, [imageList, imageIndex]);
-
-  return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => {
-        setModalVisible(!modalVisible);
-      }}
-    >
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <EvilIcons
-            name="close"
-            size={30}
-            color="#808080"
-            style={{ position: "absolute", top: 10, right: 10 }}
-            onPress={() => {
-              setImageIndex(0);
-              setModalVisible(false);
-            }}
-          />
-          <Text
-            style={{
-              fontWeight: "bold",
-              fontSize: 25,
-              color: "black",
-              marginVertical: 10,
-            }}
-          >
-            {buildingName}
-          </Text>
-          <Image
-            source={
-              imageString
-                ? { uri: imageString }
-                : require("../../images/common/loading.png")
-            }
-            style={{
-              width: 360,
-              height: 250,
-              margin: 10,
-              borderRadius: 20,
-              borderWidth: 1,
-              borderColor: "black",
-            }}
-          />
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "50%",
-              marginVertical: 15,
-            }}
-          >
-            <Pressable
-              style={{
-                width: 80,
-                alignItems: "center",
-              }}
-              onPress={() =>
-                setImageIndex(
-                  imageIndex === 0 ? imageList.length - 1 : imageIndex - 1
-                )
-              }
-            >
-              <AntDesign name="caretleft" size={24} color="black" />
-            </Pressable>
-            <Pressable
-              style={{
-                width: 80,
-                alignItems: "center",
-              }}
-              onPress={() =>
-                setImageIndex(
-                  imageIndex === imageList.length - 1 ? 0 : imageIndex + 1
-                )
-              }
-            >
-              <AntDesign name="caretright" size={24} color="black" />
-            </Pressable>
-          </View>
-          <Paragraph style={{ marginHorizontal: 20, textAlign: "justify" }}>
-            {description}
-          </Paragraph>
-        </View>
-      </View>
-    </Modal>
-  );
-};
-
-export default function HomePage() {
   const [modalVisible, setModalVisible] = useState(false);
+  const [createModalVisible, setCreateModalVisible] = useState(false);
   const [activeBuilding, setActiveBuilding] = useState(0);
-  const [buildingData, setBuildingData] = useState([
-    { buildingName: "", images: [], description: "" },
-  ]);
-  const [imageData, setImageData] = useState([]);
+  const [buildingData, setBuildingData] = useState(null);
 
   useEffect(() => {
+    getLocalUserInfo()
+      .then((data) => (setIsAdmin(data ? data.isAdmin : false)))
+      .catch();
     useHomePageApi();
   }, []);
 
   const useHomePageApi = async () => {
     try {
       const result = await getHomePageData();
-      if (result) {
-        setBuildingData(result);
-        result.forEach(async (building) => {
-          const imageValue = await getImageById(building.images[0]);
-          setImageData((previous) => [...previous, imageValue]);
-        });
-      }
+      setBuildingData(result ? result : []);
     } catch (e) {
-      return;
+      setBuildingData([]);
     }
   };
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <EachModal
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          imageList={buildingData[activeBuilding].images || []}
-          description={buildingData[activeBuilding].description || ""}
-          buildingName={buildingData[activeBuilding].buildingName || ""}
-        />
-        {buildingData.map((data, index) => (
-          <CollegeCard
-            buildingName={data.buildingName}
-            buildingImageString={imageData[index]}
-            key={index}
-            index={index}
-            setModalVisible={setModalVisible}
-            setActiveBuilding={setActiveBuilding}
+        {createModalVisible && !modalVisible && (
+          <CreateModal
+            setModalVisible={setCreateModalVisible}
+            useHomePageApi={useHomePageApi}
           />
-        ))}
+        )}
+        {modalVisible && !createModalVisible && (
+          <ViewEditModal
+            setModalVisible={setModalVisible}
+            activeBuildingData={buildingData[activeBuilding]}
+            changeBuildingData={setBuildingData}
+            useHomePageApi={useHomePageApi}
+            isAdmin={isAdmin}
+          />
+        )}
+        {isAdmin && (
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              width: "100%",
+              height: 50,
+              marginVertical: 10,
+            }}
+          >
+            <Pressable
+              style={{
+                flex: 1,
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "white",
+                borderWidth: 1,
+              }}
+              onPress={() => {
+                setCreateModalVisible(true);
+                setModalVisible(false);
+              }}
+            >
+              <AntDesign name="addfile" size={24} color="black" />
+            </Pressable>
+            <Pressable
+              style={{
+                height: 50,
+                width: 50,
+                justifyContent: "center",
+                alignItems: "center",
+                borderWidth: 1,
+                backgroundColor: "white",
+              }}
+              onPress={useHomePageApi}
+            >
+              <AntDesign name="reload1" size={24} color="black" />
+            </Pressable>
+          </View>
+        )}
+        {!!buildingData
+          ? buildingData.map((data, index) => (
+              <CollegeCard
+                buildingInfo={data}
+                key={index}
+                index={index}
+                setModalVisible={setModalVisible}
+                setActiveBuilding={setActiveBuilding}
+                setCreateModalVisible={setCreateModalVisible}
+              />
+            ))
+          : null}
       </ScrollView>
     </View>
   );
-}
+};
+
+export default HomePage;

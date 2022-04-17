@@ -1,16 +1,12 @@
-import axios from "axios";
 import React, { useState } from "react";
-import {
-  Alert,
-  Modal,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} from "react-native";
+import { Alert, Modal, StyleSheet, Text, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
-import RESPONSE from "../../utils/api/http-response";
-import { SMART_LOGIN, API_URL } from "../register.page/regiser.constant";
+import { SMART_LOGIN } from "../register.page/regiser.constant";
+import { EvilIcons } from "@expo/vector-icons";
+import {
+  sendAcitvationCodeToMail,
+  verifyActivationCode,
+} from "../../utils/api/user-api";
 
 const AccontVerifyModal = ({ modalVisible, setModalVisible, email }) => {
   const [loading, setLoading] = useState(false);
@@ -19,93 +15,66 @@ const AccontVerifyModal = ({ modalVisible, setModalVisible, email }) => {
   const [activateCodeError, setActivateCodeError] = useState(false);
 
   const { label } = SMART_LOGIN;
-
-  const sendAcitvationCodeToMail = async () => {
-    const { ACTIVATION_CODE } = API_URL;
-    setLoading(true);
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-      const { status } = await axios.patch(ACTIVATION_CODE, { email }, config);
-      if (status === RESPONSE.OK) {
-        setCodeSendMode(false);
-      }
-    } catch (error) {
-      alert("Something went wrong. Please try again later.");
-    }
-    setLoading(false);
-  };
-
   const setActivationCodeValidation = (inpCode) => {
     setActivateCodeError(!label.accessCode.codeRegex.test(inpCode));
     setAccessCode(inpCode);
   };
 
-  const verifyActivationCodeAndEnableAccount = async () => {
-    if (activateCodeError) {
-      return Alert.alert("", "Please enter required fields.");
-    }
-    const {
-      API_URL: { ACTIVATE },
-    } = registerConstants;
-    setLoading(true);
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-      const { status } = await axios.patch(
-        ACTIVATE,
-        { email, accessCode },
-        config
-      );
-      if (status === RESPONSE.OK) {
-        Alert.alert("Congratulations!", "Your account has been activated.", [
-          {
-            text: "Go Back To Login",
-            onPress: () => setModalVisible(false),
-          },
-        ]);
-      }
-    } catch (error) {
-      alert("Something went wrong. Please try again later.");
-    }
-    setLoading(false);
-  };
-
   return (
     <View style={styles.centeredView}>
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
-        <TouchableOpacity
-          style={styles.modalBackground}
-          activeOpacity={0}
-          onPress={() => {
-            setLoading(false);
-            setAccessCode("");
-            setActivateCodeError(false);
-            setModalVisible(false);
-          }}
-        ></TouchableOpacity>
         <View style={styles.centeredView}>
           {codeSendMode ? (
             <View style={styles.modalView}>
+              <EvilIcons
+                name="close"
+                size={30}
+                color="#808080"
+                style={{ position: "absolute", top: 10, right: 10, zIndex: 10 }}
+                onPress={() => {
+                  setLoading(false);
+                  setAccessCode("");
+                  setActivateCodeError(false);
+                  setModalVisible(false);
+                }}
+              />
               <Text style={styles.modalText}>
                 Your account is not activated.
               </Text>
               <Button
                 mode="contained"
                 loading={loading}
-                onPress={sendAcitvationCodeToMail}
+                onPress={async () => {
+                  setLoading(true);
+                  try {
+                    const result = await sendAcitvationCodeToMail(email);
+                    if (result) {
+                      setCodeSendMode(false);
+                    } else {
+                      alert("Something went wrong. Please try again later.");
+                    }
+                  } catch (error) {}
+
+                  setLoading(false);
+                }}
               >
                 <Text style={styles.textStyle}>Verify Email Address</Text>
               </Button>
             </View>
           ) : (
             <View style={styles.modalView}>
+              <EvilIcons
+                name="close"
+                size={30}
+                color="#808080"
+                style={{ position: "absolute", top: 10, right: 10, zIndex: 10 }}
+                onPress={() => {
+                  setLoading(false);
+                  setAccessCode("");
+                  setActivateCodeError(false);
+                  setModalVisible(false);
+                }}
+              />
               <Text style={styles.normalText}>
                 Activation code sent to your email.
               </Text>
@@ -125,7 +94,35 @@ const AccontVerifyModal = ({ modalVisible, setModalVisible, email }) => {
               <Button
                 mode="contained"
                 loading={loading}
-                onPress={verifyActivationCodeAndEnableAccount}
+                onPress={async () => {
+                  if (activateCodeError) {
+                    return Alert.alert("", "Please enter required fields.");
+                  }
+                  setLoading(true);
+                  try {
+                    const verification = await verifyActivationCode({
+                      email,
+                      accessCode,
+                    });
+                    if (verification) {
+                      Alert.alert(
+                        "Congratulations!",
+                        "Your account has been activated.",
+                        [
+                          {
+                            text: "Go Back To Login",
+                            onPress: () => setModalVisible(false),
+                          },
+                        ]
+                      );
+                    } else {
+                      alert("Something went wrong. Please try again later.");
+                    }
+                  } catch (error) {
+                    alert("Something went wrong. Please try again later.");
+                  }
+                  setLoading(false);
+                }}
               >
                 <Text style={styles.textStyle}>Activate My Account</Text>
               </Button>
@@ -166,6 +163,7 @@ const styles = StyleSheet.create({
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",
+    position: "relative",
     shadowOffset: {
       width: 0,
       height: 2,

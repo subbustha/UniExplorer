@@ -4,6 +4,8 @@ import {
   USER_BASE_URL,
   USER_LOGIN_URL,
   USER_CREATE_URL,
+  USER_SEND_ACTIVATION_CODE,
+  USER_CONFRIM_ACTIVATION_CODE,
 } from "./constants";
 import RESPONSE from "./http-response";
 
@@ -17,6 +19,7 @@ export const lookupUserAccount = async (email) => {
   try {
     config.validateStatus = (status) => status < 500;
     const { status } = await axios.get(USER_BASE_URL + email, config);
+    console.log("status = " + status);
     if (status === RESPONSE.OK) {
       return "LOGIN";
     } else if (status === RESPONSE.NOT_FOUND) {
@@ -32,7 +35,15 @@ export const lookupUserAccount = async (email) => {
 
 export const createUserAccount = async (userData) => {
   try {
-    const { status } = await axios.post(USER_CREATE_URL, userData, config);
+    const createAccountConfig = await getLocalAuthConfig();
+    if (!createAccountConfig) {
+      return false;
+    }
+    const { status } = await axios.post(
+      USER_CREATE_URL,
+      userData,
+      createAccountConfig
+    );
     if (status === RESPONSE.CREATED) {
       return true;
     }
@@ -55,5 +66,23 @@ export const loginUserAccount = async (userData) => {
     return [false, false];
   } catch (error) {
     return [false, false];
+  }
+};
+
+export const sendAcitvationCodeToMail = async (email) => {
+  try {
+    await axios.patch(USER_SEND_ACTIVATION_CODE, { email }, config);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const verifyActivationCode = async (payload) => {
+  try {
+    await axios.patch(USER_CONFRIM_ACTIVATION_CODE, payload, config);
+    return true;
+  } catch (error) {
+    return false;
   }
 };

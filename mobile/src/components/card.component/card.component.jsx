@@ -18,7 +18,7 @@ const CardComponent = (props) => {
         .then((result) => setImageValue(result))
         .catch(() => {});
     }
-  }, []);
+  }, [image]);
 
   return (
     <View
@@ -31,7 +31,11 @@ const CardComponent = (props) => {
       }}
     >
       <Image
-        source={imageValue ? { uri: imageValue } : require("../../images/common/loading.png")}
+        source={
+          imageValue
+            ? { uri: imageValue }
+            : require("../../images/common/loading.png")
+        }
         style={{ width: 150, height: 150, backgroundColor: "black" }}
       />
       <View
