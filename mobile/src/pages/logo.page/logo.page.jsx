@@ -13,7 +13,6 @@ export default function LogoPage({ navigation }) {
     setTimeout(async () => {
       try {
         const isUserVerified = await verifyIfUserIsLoggedIn();
-        console.log("isUserVerified = " + isUserVerified);
         navigation.reset({
           index: 0,
           routes: [

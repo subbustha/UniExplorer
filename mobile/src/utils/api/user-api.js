@@ -6,6 +6,7 @@ import {
   USER_CREATE_URL,
   USER_SEND_ACTIVATION_CODE,
   USER_CONFRIM_ACTIVATION_CODE,
+  ADMIN_BASE_URL,
 } from "./constants";
 import RESPONSE from "./http-response";
 
@@ -15,11 +16,24 @@ const config = {
   },
 };
 
+export const getAllAdmins = async () => {
+  try {
+    const getAdminsConfig = await getLocalAuthConfig();
+    if (!getAdminsConfig) {
+      return [];
+    } else {
+      const { data = [] } = await axios.get(ADMIN_BASE_URL, getAdminsConfig);
+      return data;
+    }
+  } catch (error) {
+    return [];
+  }
+};
+
 export const lookupUserAccount = async (email) => {
   try {
     config.validateStatus = (status) => status < 500;
     const { status } = await axios.get(USER_BASE_URL + email, config);
-    console.log("status = " + status);
     if (status === RESPONSE.OK) {
       return "LOGIN";
     } else if (status === RESPONSE.NOT_FOUND) {
@@ -35,9 +49,9 @@ export const lookupUserAccount = async (email) => {
 
 export const createUserAccount = async (userData) => {
   try {
-    const createAccountConfig = await getLocalAuthConfig();
+    let createAccountConfig = await getLocalAuthConfig();
     if (!createAccountConfig) {
-      return false;
+      createAccountConfig = config;
     }
     const { status } = await axios.post(
       USER_CREATE_URL,
@@ -81,6 +95,19 @@ export const sendAcitvationCodeToMail = async (email) => {
 export const verifyActivationCode = async (payload) => {
   try {
     await axios.patch(USER_CONFRIM_ACTIVATION_CODE, payload, config);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const deleteUserAccount = async (email) => {
+  try {
+    const superAdminConfig = await getLocalAuthConfig();
+    if (!superAdminConfig) {
+      return false;
+    }
+    await axios.delete(USER_BASE_URL + email, superAdminConfig);
     return true;
   } catch (error) {
     return false;

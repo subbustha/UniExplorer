@@ -4,7 +4,13 @@ const Home = require("../models/homeModel");
 const Image = require("../models/imageModel");
 const multer = require("multer");
 const sharp = require("sharp");
-const { UNAUTHORIZED } = require("../services/http-response");
+const {
+  UNAUTHORIZED,
+  INVALID_DATA_PROVIDED,
+  NOT_FOUND,
+  OK,
+  INTERNAL_SERVER_ERROR,
+} = require("../services/http-response");
 const upload = multer({
   limits: {
     fileSize: 10000000,
@@ -28,7 +34,7 @@ router.post(
   authUser,
   upload.single("images"),
   async (request, response) => {
-    if(!request.isAdmin) {
+    if (!request.isAdmin) {
       return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
     }
     if (request.fileExist) {
@@ -75,45 +81,77 @@ router.get("/api/home", authUser, async (request, response) => {
   }
 });
 
-//Router to update an item with id
+//Router to update a building info with id
 router.patch("/api/home/:id", authUser, async (request, response) => {
   if (!request.isAdmin) {
     return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
   }
   const itemData = Object.keys(request.body);
-  const allowedData = ["name", "prices", "description", "available", "picture"];
+  const allowedData = ["buildingName", "description"];
   const isValidOperation = itemData.every((data) => allowedData.includes(data));
-  if (!isValidOperation) {
-    return response.status(406).send("Invalid Data Provided");
+  if (
+    !isValidOperation ||
+    !request.params?.id ||
+    !request.body?.buildingName ||
+    !request.body?.description
+  ) {
+    return response
+      .status(INVALID_DATA_PROVIDED.status)
+      .send(INVALID_DATA_PROVIDED.message);
   }
   try {
-    const item = await Item.findById({ _id: request.params.id });
-    if (!item) {
-      return response.status(404).send("Item not found");
+    let buildingInfo = null;
+    try {
+      buildingInfo = await Home.findById({ _id: request.params.id });
+    } catch (error) {
+      return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
     }
-    itemData.forEach((data) => {
-      item[data] = request.body[data];
-    });
-    await item.save();
-    response.status(200).send(item);
+
+    if (!buildingInfo) {
+      return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
+    }
+    buildingInfo.buildingName = request.body.buildingName;
+    buildingInfo.description = request.body.description;
+    await buildingInfo.save();
+    response.status(OK.status).send(OK.message);
   } catch (error) {
-    response.status(500).send("Internal Server Error");
+    response
+      .status(INTERNAL_SERVER_ERROR.status)
+      .send(INTERNAL_SERVER_ERROR.message);
   }
 });
 //Router to delete an item with id
 router.delete("/api/home/:id", authUser, async (request, response) => {
+  if (!request.params?.id) {
+    return response
+      .status(INVALID_DATA_PROVIDED.status)
+      .send(INVALID_DATA_PROVIDED.message);
+  }
   if (!request.isAdmin) {
     return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
   }
   try {
-    const item = await Item.findById({ _id: request.params.id });
-    if (!item) {
-      return response.status(404).send("Item not found");
+    try {
+      const buildingInfo = await Home.findById({ _id: request.params.id });
+      if (!buildingInfo) {
+        return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
+      }
+      if (buildingInfo.images.length !== 0) {
+        buildingInfo.images.forEach(async (imageId) => {
+          try {
+            await Image.deleteOne({ _id: imageId });
+          } catch (error) {}
+        });
+      }
+      await Home.deleteOne({ _id: request.params.id });
+      return response.status(OK.status).send(OK.message);
+    } catch (error) {
+      return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
     }
-    await Item.deleteOne({ _id: request.params.id });
-    response.status(200).send(item);
   } catch (error) {
-    response.status(500).send("Internal Server Error");
+    response
+      .status(INTERNAL_SERVER_ERROR.status)
+      .send(INTERNAL_SERVER_ERROR.message);
   }
 });
 module.exports = router;

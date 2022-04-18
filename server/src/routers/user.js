@@ -92,7 +92,7 @@ router.post("/api/user/login", async (request, response) => {
   }
 });
 //Router for user logout
-router.post("/api/user/logout", authUser, async (request, response) => {
+router.patch("/api/user/logout", authUser, async (request, response) => {
   const methodName = "UserLogoutRoute";
   try {
     request.user.token = "null";
@@ -139,7 +139,7 @@ router.post(
           email,
           password,
           fullName,
-          emailVerified: true,
+          emailVerified: false,
           isAdmin: true,
         });
       } else {
@@ -170,18 +170,41 @@ router.get("/api/user", authUser, (request, response) => {
   }
 });
 
+//Router for getting all admins
+router.get("/api/admin", authUser, async (request, response) => {
+  if (!request.isAdmin) {
+    return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
+  }
+  try {
+    const admins = await User.find({ isAdmin: true });
+    if (!admins) {
+      return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
+    }
+    admins.forEach((admin) => (admin.token = ""));
+    const filteredAdmins = admins.filter(
+      (each) =>
+        each.email.toLowerCase() !== process.env.SUPER_ADMIN.toLowerCase()
+    );
+    return response.status(OK.status).send(filteredAdmins);
+  } catch (e) {
+    return response
+      .status(INTERNAL_SERVER_ERROR.status)
+      .send(INTERNAL_SERVER_ERROR.message);
+  }
+});
+
 //Router for deleting user data
-router.delete("/api/user", authUser, async (request, response) => {
+router.delete("/api/user/:id", authUser, async (request, response) => {
   const methodName = "UserDeleteRoute";
   try {
     if (request.isSuperAdminRequest) {
-      const email = request.body.email;
+      const email = request.params?.id;
       if (!email) {
         return response
           .status(INVALID_DATA_PROVIDED.status)
           .send(INVALID_DATA_PROVIDED.message);
       }
-      if(email.toLowerCase() === process.env.SUPER_ADMIN){
+      if (email.toLowerCase() === process.env.SUPER_ADMIN || email.toL) {
         return response.status(CONFLICT.status).send(CONFLICT.message);
       }
       const admin = await User.findOne({ email, isAdmin: true });
@@ -191,6 +214,9 @@ router.delete("/api/user", authUser, async (request, response) => {
       await admin.remove();
       log.info(fileName, methodName, OK.message);
       return response.status(OK.status).send(OK.message);
+    }
+    if (request.isAdmin && !request.isSuperAdminRequest) {
+      return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
     }
     const email = request.user.email.toLowerCase();
     const user = await User.findOne({ email });

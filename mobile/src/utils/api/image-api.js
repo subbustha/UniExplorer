@@ -23,7 +23,6 @@ export const deleteImageById = async (collectionName, identifier, imageId) => {
     } else {
       const apiUrl =
         IMAGE_BASE_URL + collectionName + "/" + identifier + "/" + imageId;
-      console.log(apiUrl);
       await axios.delete(apiUrl, config);
       return true;
     }
@@ -43,7 +42,6 @@ export const uploadImageViaApi = async (
       return false;
     } else {
       const apiUrl = IMAGE_BASE_URL + collectionName + "/" + identifier;
-      console.log(apiUrl);
       await axios.patch(apiUrl, formData, config);
       return true;
     }

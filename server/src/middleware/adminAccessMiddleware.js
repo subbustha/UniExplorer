@@ -29,6 +29,10 @@ const adminAccessMiddleware = async (request, response, next) => {
     }
     request.isSuperAdminRequest =
       user.email.toLowerCase() === process.env.SUPER_ADMIN;
+    if (user.isAdmin && !request.isSuperAdminRequest) {
+      log.warn(fileName, methodName, UNAUTHORIZED.message);
+      return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
+    }
     next();
   } catch (error) {
     log.error(fileName, methodName, error);

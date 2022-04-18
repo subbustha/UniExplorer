@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const USER_TOKEN = "USER_TOKEN";
+export const USER_TOKEN = "USER_TOKEN";
 
 export const getLocalAuthConfig = async () => {
   try {
@@ -64,3 +64,5 @@ export const IMAGE_BASE_URL = API_BASE_URL + "image/";
 export const LAF_BASE_URL = API_BASE_URL + "item/";
 
 export const FEEDBACK_BASE_URL = API_BASE_URL + "feedback/";
+
+export const ADMIN_BASE_URL = API_BASE_URL + "admin/";

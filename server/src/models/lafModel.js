@@ -21,12 +21,6 @@ const itemSchema = new Schema({
     required: true,
     maxlength: 50,
   },
-  color: {
-    // Color of the item discovered
-    type: String,
-    required: true,
-    maxlength:20,
-  },
   claimedBy: {
     // Who has claimed the item
     type: String,

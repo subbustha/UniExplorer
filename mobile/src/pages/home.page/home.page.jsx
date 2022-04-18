@@ -120,7 +120,7 @@ const HomePage = () => {
 
   useEffect(() => {
     getLocalUserInfo()
-      .then((data) => (setIsAdmin(data ? data.isAdmin : false)))
+      .then((data) => setIsAdmin(data ? data.isAdmin : false))
       .catch();
     useHomePageApi();
   }, []);

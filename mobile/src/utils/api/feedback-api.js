@@ -1,7 +1,6 @@
 import axios from "axios";
 import { getLocalAuthConfig, FEEDBACK_BASE_URL } from "./constants";
 
-export const getFeedback = async () => {};
 
 export const sendFeedback = async (message) => {
   try {
@@ -17,4 +16,16 @@ export const sendFeedback = async (message) => {
   }
 };
 
-export const deleteFeedback = async () => {};
+export const getFeedback = async () => {
+  try {
+    const config = await getLocalAuthConfig();
+    if (!config) {
+      return false;
+    } else {
+      const { data = [] } = await axios.get(FEEDBACK_BASE_URL, config);
+      return data;
+    }
+  } catch (error) {
+    return false;
+  }
+};

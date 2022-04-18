@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { View, Image, Text } from "react-native";
+import { View, Image, Text, Pressable, Alert } from "react-native";
 import { getImageById } from "../../utils/api/image-api";
+import { AntDesign, Feather } from "@expo/vector-icons";
+import { deleteLostAndFoundData } from "../../utils/api/lostandfound-api";
 
-const CardComponent = (props) => {
-  const {
-    name = "Not provided",
-    image = "",
-    location = "Not provided",
-    claimedBy = "",
-  } = props;
-
+const CardComponent = ({
+  name = "Not provided",
+  image = "",
+  location = "Not provided",
+  claimedBy = "",
+  _id = "",
+  setEditMode,
+  setEditData,
+  setShowModal,
+  getLostAndFoundDataVaiApi,
+  isAdmin = false,
+}) => {
   const [imageValue, setImageValue] = useState("");
 
   useEffect(() => {
@@ -41,10 +47,60 @@ const CardComponent = (props) => {
       <View
         style={{
           flex: 1,
-          backgroundColor: "#bfbfbf",
+          backgroundColor: "white",
           justifyContent: "space-evenly",
+          position: "relative",
         }}
       >
+        {isAdmin && (
+          <View
+            style={{
+              position: "absolute",
+              bottom: 5,
+              right: 50,
+              width: 80,
+              height: 25,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              zIndex: 5,
+            }}
+          >
+            <Pressable
+              onPress={() => {
+                setEditData({ name, location, claimedBy, _id });
+                setShowModal(true);
+                setEditMode(true);
+              }}
+            >
+              <AntDesign name="edit" size={24} color="gray" />
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                Alert.alert("Are you sure you want to delete this item?", "", [
+                  {
+                    text: "Delete",
+                    onPress: () => {
+                      deleteLostAndFoundData(_id)
+                        .then((result) => {
+                          if (result) {
+                            getLostAndFoundDataVaiApi();
+                          } else {
+                            alert("Something went wrong.");
+                          }
+                        })
+                        .catch((error) => alert("Something went wrong."));
+                    },
+                  },
+                  {
+                    text: "Cancel",
+                  },
+                ]);
+              }}
+            >
+              <Feather name="trash" size={20} color="red" />
+            </Pressable>
+          </View>
+        )}
         <View>
           <Text
             style={{

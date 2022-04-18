@@ -27,6 +27,9 @@ const {
   UNAUTHORIZED,
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
+  OK,
+  INVALID_DATA_PROVIDED,
+  CONFLICT,
 } = require("../services/http-response");
 
 router.get("/api/image/:imageId", authUser, async (request, response) => {
@@ -38,11 +41,14 @@ router.get("/api/image/:imageId", authUser, async (request, response) => {
     } catch (e) {
       return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
     }
+    if (!image) {
+      return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
+    }
     image = image.toObject();
     delete image._id;
     delete image.__v;
     return response
-      .status(200)
+      .status(OK.status)
       .send(`data:image/png;base64,${image.image.toString("base64")}`);
   } catch (error) {
     response
@@ -51,55 +57,119 @@ router.get("/api/image/:imageId", authUser, async (request, response) => {
   }
 });
 
-router.post(
-  "/api/image",
+router.patch(
+  "/api/image/:collection/:id",
   authUser,
   upload.single("image"),
   async (request, response) => {
+    if (!request.params?.collection || !request.params?.id) {
+      return response
+        .status(INVALID_DATA_PROVIDED.status)
+        .send(INVALID_DATA_PROVIDED.message);
+    }
     if (!request.isAdmin) {
       return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
     }
     if (request.fileExist) {
       if (!request.validFile) {
-        return response.status(406).send("Invalid Data Provided");
+        return response
+          .status(INVALID_DATA_PROVIDED.status)
+          .send(INVALID_DATA_PROVIDED.message);
       }
     }
     const imageData = Object.keys(request.body);
-    const allowedData = ["image", "collection", "identifier"];
+    const allowedData = ["image"];
     const isValidOperation = imageData.every((data) =>
       allowedData.includes(data)
     );
     if (!isValidOperation) {
-      return response.status(406).send("Invalid Data Provided");
+      return response
+        .status(INVALID_DATA_PROVIDED.status)
+        .send(INVALID_DATA_PROVIDED.message);
     }
     try {
-      const { collection = null, identifier = null } = request.body;
-      if (!collection || !identifier) {
-        return response.status(406).send("Invalid Data Provided");
+      const { collection, id: identifier } = request.params;
+      if (!request.file) {
+        return response
+          .status(INVALID_DATA_PROVIDED.status)
+          .send(INVALID_DATA_PROVIDED.message);
       }
-      if (request.file) {
-        const buffer = await sharp(request.file.buffer)
-          .resize({ width: 300, height: 300 })
-          .png({ quality: 20 })
-          .toBuffer();
+      const buffer = await sharp(request.file.buffer)
+        .resize({ width: 300, height: 300 })
+        .png({ quality: 20 })
+        .toBuffer();
+      if (collection.toLowerCase() === "home") {
+        const collectionItem = await Home.findOne({
+          _id: new ObjectId(identifier),
+        });
+        if (!collectionItem) {
+          return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
+        }
         const image = new Image({ image: buffer });
         const uploadedImage = await image.save();
-        if (collection === "home") {
-          const collectionItem = await Home.findOne({
-            _id: new ObjectId(identifier),
-          });
-          if (collectionItem) {
-            collectionItem.images = [
-              ...collectionItem.images,
-              uploadedImage._id,
-            ];
-            await collectionItem.save();
-          }
+        collectionItem.images = [...collectionItem.images, uploadedImage._id];
+        await collectionItem.save();
+        return response.status(OK.status).send(OK.message);
+      } else if (collection.toLowerCase() === "item") {
+        const collectionItem = await LostAndFound.findById({ _id: identifier });
+        if (!collectionItem) {
+          return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
         }
+        await Image.deleteOne({ _id: collectionItem.image });
+        const image = new Image({ image: buffer });
+        const uploadedImage = await image.save();
+        collectionItem.image = uploadedImage._id;
+        await collectionItem.save();
+        return response.status(OK.status).send(OK.message);
+      } else {
+        return response.status(CONFLICT.status).send(CONFLICT.message);
       }
-    } catch (error) {}
+    } catch (error) {
+      response
+        .status(INTERNAL_SERVER_ERROR.status)
+        .send(INTERNAL_SERVER_ERROR.message);
+    }
   }
 );
 
+router.delete(
+  "/api/image/:collection/:id/:imageId",
+  authUser,
+  async (request, response) => {
+    const {
+      collection = null,
+      id: identifier = null,
+      imageId = null,
+    } = request.params;
+    if (!collection || !identifier || !imageId) {
+      return response
+        .status(INVALID_DATA_PROVIDED.status)
+        .send(INVALID_DATA_PROVIDED.message);
+    }
+    if (!request.isAdmin) {
+      return response.status(UNAUTHORIZED.status).send(UNAUTHORIZED.message);
+    }
+    try {
+      if (collection.toLowerCase() === "home") {
+        const collectionItem = await Home.findOne({
+          _id: new ObjectId(identifier),
+        });
+        if (!collectionItem || !collectionItem.images.includes(imageId)) {
+          return response.status(NOT_FOUND.status).send(NOT_FOUND.message);
+        }
+        collectionItem.images = collectionItem.images.filter(
+          (each) => each.toString() !== imageId
+        );
+        await Image.deleteOne({ _id: imageId });
+        await collectionItem.save();
+        return response.status(OK.status).send(OK.message);
+      }
+    } catch (e) {
+      response
+        .status(INTERNAL_SERVER_ERROR.status)
+        .send(INTERNAL_SERVER_ERROR.message);
+    }
+  }
+);
 
 module.exports = router;

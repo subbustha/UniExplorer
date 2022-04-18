@@ -9,7 +9,7 @@ import {
   Surface,
   Text,
 } from "react-native-paper";
-import { SMART_LOGIN, VIEWS, API_URL } from "./regiser.constant";
+import { SMART_LOGIN, VIEWS } from "./regiser.constant";
 import {
   emailValidator,
   passwordValidator,
@@ -114,7 +114,6 @@ const RegisterPage = (props) => {
     try {
       const result = await lookupUserAccount(email);
       if (result) {
-        console.log("result = "+result);
         if (result === "LOGIN") {
           setCurrentView(VIEWS.LOGIN_VIEW);
         } else if (result === "CREATE") {
@@ -124,7 +123,6 @@ const RegisterPage = (props) => {
         }
       }
     } catch (error) {
-      console.log(error);
       alert("Something went wrong. Please try again later.");
     }
     setLoading(false);

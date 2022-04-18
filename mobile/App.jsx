@@ -95,7 +95,7 @@ const ActivityPage = (props) => {
 
   return (
     <Drawer.Navigator
-      initialRouteName={isAdmin ? "Admin" : "Home"}
+      initialRouteName={"Home"}
       drawerContent={(props) => <DrawerNavigatorLogo {...props} />}
     >
       {isAdmin && (
