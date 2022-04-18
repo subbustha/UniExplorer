@@ -29,11 +29,6 @@ app.use(router);
 app.get("/heartbeat", (request, response) => {
   response.send("Backend is working properly.");
 });
-//404 Page not found Error
-router.get("/api/404", (request, response) => {
-  //On browser run localhost:3000/check. The server should be running
-  response.send("404 Page not found");
-});
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 app.listen(process.env.PORT, () => {

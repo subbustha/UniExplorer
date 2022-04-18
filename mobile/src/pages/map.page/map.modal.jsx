@@ -1,21 +1,18 @@
-import React from "react";
-import { Modal, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Modal, StyleSheet, Text, View, Pressable } from "react-native";
 import { EvilIcons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-gesture-handler";
 import { AntDesign } from "@expo/vector-icons";
-import { borderColor } from "react-native/Libraries/Components/View/ReactNativeStyleAttributes";
 
-const MapModal = ({
-  modalVisible,
-  setModalVisible,
-  currentBuilding = null,
-}) => {
+const MapModal = ({ setModalVisible, currentBuilding = null }) => {
+  const [openDrawerIndex, setOpenDrawerIndex] = useState(-1);
+
   if (!currentBuilding) {
     return null;
   }
   return (
     <View style={styles.centeredView}>
-      <Modal animationType="slide" transparent={true} visible={modalVisible}>
+      <Modal animationType="slide" transparent={true} visible={true}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <EvilIcons
@@ -28,208 +25,80 @@ const MapModal = ({
             <Text style={{ fontSize: 20, marginBottom: 20 }}>
               {currentBuilding.name}
             </Text>
-            <ScrollView
-              style={{
-                width: "100%",
-                flex: 1,
-              }}
-            >
-              <View
+            {currentBuilding.classes.length !== 0 ? (
+              <ScrollView
                 style={{
                   width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
+                  flex: 1,
                 }}
               >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
+                {currentBuilding.classes.map((each, index) => (
+                  <View key={index}>
+                    <Pressable
+                      style={{
+                        width: "100%",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingVertical: 10,
+                        paddingHorizontal: 20,
+                        borderBottomWidth: 1,
+                        borderColor: "gray",
+                      }}
+                      onPress={() =>
+                        setOpenDrawerIndex(
+                          openDrawerIndex === index ? -1 : index
+                        )
+                      }
+                    >
+                      <Text style={{ fontSize: 20 }}>
+                        {each.className}{" "}
+                        {each.classCode ? "| " + each.classCode : ""}
+                      </Text>
+                      <AntDesign
+                        name={openDrawerIndex === index ? "down" : "right"}
+                        size={20}
+                        color="black"
+                      />
+                    </Pressable>
+                    {openDrawerIndex === index && (
+                      <View
+                        style={{
+                          padding: 20,
+                          borderBottomWidth: 1,
+                          borderRightWidth: 1,
+                          borderLeftWidth: 1,
+                        }}
+                      >
+                        {each.direction.map((message, index) => (
+                          <Text key={index}>{message}</Text>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </ScrollView>
+            ) : (
               <View
                 style={{
+                  flex: 1,
                   width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  justifyContent: "center",
                   alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
                 }}
               >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
+                <Text
+                  style={{
+                    color: "black",
+                    paddingHorizontal: 20,
+                    fontSize: 25,
+                    textAlign: "center",
+                  }}
+                >
+                  {currentBuilding.description}
+                </Text>
               </View>
-              <View
-                style={{
-                  width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderBottomWidth: 1,
-                  borderColor: "gray",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>LP-0126</Text>
-                <AntDesign name="right" size={15} color="black" />
-              </View>
-            </ScrollView>
+            )}
           </View>
         </View>
       </Modal>

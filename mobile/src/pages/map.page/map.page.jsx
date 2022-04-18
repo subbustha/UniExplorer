@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, Pressable, Platform, Text } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE, Overlay } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { TextInput } from "react-native-paper";
 import * as Location from "expo-location";
 import { BUILDING_DATA } from "./map.building.location";
-import { OVERLAY_DATA } from "./map.overlay";
 import MapModal from "./map.modal";
 import { EvilIcons } from "@expo/vector-icons";
 
@@ -94,11 +93,12 @@ const MapPage = () => {
 
   return (
     <View style={styles.container}>
-      <MapModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        currentBuilding={filteredBuildingInfo[currentBuildingIndex]}
-      />
+      {modalVisible && (
+        <MapModal
+          setModalVisible={setModalVisible}
+          currentBuilding={filteredBuildingInfo[currentBuildingIndex]}
+        />
+      )}
       <View
         style={{
           position: "absolute",
@@ -154,13 +154,8 @@ const MapPage = () => {
           customMapStyle={mapStyle}
           provider={PROVIDER_GOOGLE}
           showsUserLocation={true}
-          region={{
-            latitude: 27.7081557,
-            longitude: 85.3252162,
-            latitudeDelta: 0.0019,
-            longitudeDelta: 0.0019,
-          }}
-          // onRegionChangeComplete={restrictMapBoundaries}
+          region={currentRegion}
+          onRegionChangeComplete={restrictMapBoundaries}
           maxZoomLevel={20}
           minZoomLevel={18}
           mapType={Platform.OS == "android" ? "standard" : "standard"}
@@ -177,29 +172,8 @@ const MapPage = () => {
                 setModalVisible(true);
               }}
             >
-              <Text>.</Text>
+              {each.icon ? each.icon : <Text>.</Text>}
             </Marker>
-          ))}
-          {/* <Overlay
-            image={require("./Maps.png")}
-            bounds={[
-              [27.7097098, 85.3244882],
-              [27.7073300, 85.3259851],
-            ]}
-          /> */}
-          {OVERLAY_DATA.map((each, index) => (
-            <Overlay
-              image={each.uri}
-              bounds={
-                each.bounds || [
-                  each.coordinates,
-                  [each.coordinates[0] + 0.0001, each.coordinates[1] + 0.0001],
-                ]
-              }
-              bearing={each.bearing || 0}
-              key={index}
-              style={{ bordeWidth: 1 }}
-            />
           ))}
         </MapView>
       </View>
