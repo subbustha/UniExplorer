@@ -2,6 +2,8 @@ import React from "react";
 import { Modal, StyleSheet, Text, View } from "react-native";
 import { EvilIcons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-gesture-handler";
+import { AntDesign } from "@expo/vector-icons";
+import { borderColor } from "react-native/Libraries/Components/View/ReactNativeStyleAttributes";
 
 const MapModal = ({
   modalVisible,
@@ -30,10 +32,204 @@ const MapModal = ({
               style={{
                 width: "100%",
                 flex: 1,
-                borderWidth: 1,
-                borderRadius: 20,
               }}
-            ></ScrollView>
+            >
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: "gray",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>LP-0126</Text>
+                <AntDesign name="right" size={15} color="black" />
+              </View>
+            </ScrollView>
           </View>
         </View>
       </Modal>

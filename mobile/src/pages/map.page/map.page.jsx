@@ -196,7 +196,9 @@ const MapPage = () => {
                   [each.coordinates[0] + 0.0001, each.coordinates[1] + 0.0001],
                 ]
               }
+              bearing={each.bearing || 0}
               key={index}
+              style={{ bordeWidth: 1 }}
             />
           ))}
         </MapView>
