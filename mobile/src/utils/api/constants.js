@@ -39,7 +39,7 @@ export const isAdmin = async () => {
   }
 };
 
-export const API_BASE_URL = "http://192.168.1.98:5000/api/";
+export const API_BASE_URL = "http://192.168.254.91:5000/api/";
 
 export const HOME_BASE_URL = API_BASE_URL + "home/";
 
@@ -55,9 +55,9 @@ export const USER_SEND_ACTIVATION_CODE = USER_BASE_URL + "send/activation/";
 
 export const USER_CONFRIM_ACTIVATION_CODE = USER_BASE_URL + "activate/";
 
-export const USER_SEND_PASSWOR_RESET_CODE = "send/reset/";
+export const USER_SEND_PASSWOR_RESET_CODE = USER_BASE_URL + "send/reset/";
 
-export const USER_CONFIRM_PASSWORD_RESET = "reset/";
+export const USER_CONFIRM_PASSWORD_RESET = USER_BASE_URL + "reset/";
 
 export const IMAGE_BASE_URL = API_BASE_URL + "image/";
 

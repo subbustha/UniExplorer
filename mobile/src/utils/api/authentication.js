@@ -22,15 +22,17 @@ const verifyIfUserIsLoggedIn = async () => {
 
 const logOutUser = async () => {
   try {
-    await AsyncStorage.clear();
     const config = await getLocalAuthConfig();
     if (!config) {
+      await AsyncStorage.clear();
       return;
     } else {
       await axios.patch(USER_LOGOUT_URL, config);
+      await AsyncStorage.clear();
       return;
     }
   } catch (error) {
+    await AsyncStorage.clear();
     return;
   }
 };

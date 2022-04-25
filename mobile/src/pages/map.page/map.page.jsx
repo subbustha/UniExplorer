@@ -36,9 +36,9 @@ const mapStyle = [
 
 const staticLocation = {
   latitude: 27.7081557,
-  longitude: 85.3254762,
-  latitudeDelta: 0.0015,
-  longitudeDelta: 0.0015,
+  longitude: 85.3251962,
+  latitudeDelta: 0.002,
+  longitudeDelta: 0.002,
 };
 
 const MapPage = () => {

@@ -5,7 +5,9 @@ import {
   USER_LOGIN_URL,
   USER_CREATE_URL,
   USER_SEND_ACTIVATION_CODE,
+  USER_SEND_PASSWOR_RESET_CODE,
   USER_CONFRIM_ACTIVATION_CODE,
+  USER_CONFIRM_PASSWORD_RESET,
   ADMIN_BASE_URL,
 } from "./constants";
 import RESPONSE from "./http-response";
@@ -108,6 +110,25 @@ export const deleteUserAccount = async (email) => {
       return false;
     }
     await axios.delete(USER_BASE_URL + email, superAdminConfig);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const sendPasswordResetCodeToMail = async (email) => {
+  try {
+    await axios.patch(USER_SEND_PASSWOR_RESET_CODE, { email }, config);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+export const verifyResetCode = async (payload) => {
+  try {
+    await axios.patch(USER_CONFIRM_PASSWORD_RESET, payload, config);
     return true;
   } catch (error) {
     return false;

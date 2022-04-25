@@ -11,6 +11,7 @@ import {
 import { Button, TextInput, Surface } from "react-native-paper";
 import RESPONSE from "../../utils/api/http-response";
 import { SMART_LOGIN, API_URL } from "../register.page/regiser.constant";
+import { sendPasswordResetCodeToMail, verifyResetCode } from "../../utils/api/user-api";
 
 const PasswordResetModal = ({ modalVisible, setModalVisible, email }) => {
   const [loading, setLoading] = useState(false);
@@ -21,27 +22,22 @@ const PasswordResetModal = ({ modalVisible, setModalVisible, email }) => {
   const [resetCodeError, setResetCodeError] = useState(false);
   const { label } = SMART_LOGIN;
 
-  const sendResetCodeToMail = async () => {
-    const { PASSWORD_RESET_CODE } = API_URL;
+  const sendResetCodeToMail = () => {
     setLoading(true);
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-      const { status } = await axios.patch(
-        PASSWORD_RESET_CODE,
-        { email },
-        config
-      );
-      if (status === RESPONSE.OK) {
-        setCodeSendMode(false);
-      }
-    } catch (error) {
-      alert("Something went wrong. Please try again later.");
-    }
-    setLoading(false);
+    sendPasswordResetCodeToMail(email)
+      .then(result => {
+        if (result) {
+          setCodeSendMode(false);
+          setLoading(false);
+        } else {
+          alert("Something went wrong.");
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        alert("Something went wrong.");
+        setLoading(false);
+      })
   };
 
   const setResetCodeValidation = (inpCode) => {
@@ -54,45 +50,38 @@ const PasswordResetModal = ({ modalVisible, setModalVisible, email }) => {
     setNewPassword(inpPassword);
   };
 
-  const verifyResetCodeAndCreateNewPassword = async () => {
+  const verifyResetCodeAndCreateNewPassword = () => {
     if (passwordError || resetCodeError) {
       return Alert.alert("", "Please enter required fields.");
     }
-    const {
-      API_URL: { PASSWORD_RESET },
-    } = registerConstants;
     setLoading(true);
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-      const { status } = await axios.patch(
-        PASSWORD_RESET,
-        { email, accessCode, password },
-        config
-      );
-      if (status === RESPONSE.OK) {
-        Alert.alert("Congratulations!", "Your password is reset.", [
-          {
-            text: "View Login",
-            onPress: () => {
-              setLoading(false);
-              setCodeSendMode(true);
-              setAccessCode("");
-              setNewPassword("");
-              setPasswordError(false);
-              setResetCodeError(false);
-              setModalVisible(false);
+    verifyResetCode({ email, accessCode, password })
+      .then(result => {
+        if (result) {
+          setLoading(false);
+          Alert.alert("Congratulations!", "Your password is reset.", [
+            {
+              text: "View Login",
+              onPress: () => {
+                setLoading(false);
+                setCodeSendMode(true);
+                setAccessCode("");
+                setNewPassword("");
+                setPasswordError(false);
+                setResetCodeError(false);
+                setModalVisible(false);
+              },
             },
-          },
-        ]);
-      }
-    } catch (error) {
-      alert("Something went wrong. Please try again later.");
-    }
-    setLoading(false);
+          ]);
+        } else {
+          alert("Something went wrong.");
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        alert("Something went wrong.");
+        setLoading(false);
+      })
   };
 
   return (
